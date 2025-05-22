@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Fedelta {
-    String ID;
+    int ID;
     String nomePossessore, cognomePossessore, CFpossessore;
 
 }

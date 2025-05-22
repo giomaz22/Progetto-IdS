@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DataBconnect {
     private static final String URL = "jdbc:h2:./database/trenical;AUTO_SERVER=TRUE";
     // salva file trenical.mv.db nella cartella /database
-    private static final String USER = "giovannim";
+    private static final String USER = "sa";
     private static final String PASSWORD = "";
 
     private static Connection connection;

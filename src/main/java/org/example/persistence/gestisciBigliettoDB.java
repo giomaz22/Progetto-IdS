@@ -10,25 +10,25 @@ import java.util.List;
 
 public class gestisciBigliettoDB {
 
-    public void addBiglietto(Biglietto biglietto) {
+    public void addBiglietto(Biglietto b) {
         String sql = "INSERT INTO biglietti (partenza, destinazione, treno, classe, posto, PNR, nomeU, cognU, cf, dataPart, dataArr, numCarrozza, idFedelta, prezzo, codBiglietto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
 
-            stmt.setString(1, biglietto.getStazionePartenza()); // partenza, es. PAOLA
-            stmt.setString(2, biglietto.getStazioneArrivo()); // destinazione, es. SALERNO
-            stmt.setString(3, biglietto.getID_treno()); // treno, es. IC 755
-            stmt.setString(4, biglietto.getClasse()); // classe, es. BUSINESS
-            stmt.setString(5, biglietto.getPosto()); // numero posto, es. 6A
-            stmt.setString(6, biglietto.getPNR()); // numero prenotazione, es AW887
-            stmt.setString(7, biglietto.getNomeUtente()); // nome utente, es. GIOVANNI
-            stmt.setString(8, biglietto.getCognomeUtente()); // cognome utente, es. MAZZEI
-            stmt.setString(9, biglietto.getCF()); // CF, es. MZZGNN03S22D122I
-            stmt.setString(10, biglietto.getDataPartenza()); // data partenza, es. 08-05-2025
-            stmt.setString(11, biglietto.getDataArrivo()); // data arrivo, es. 09-08-2025
-            stmt.setInt(12, biglietto.getCarrozza()); // numero carrozza, es. 5
-            stmt.setInt(13, biglietto.getIDfedelta()); // numero ID fedelta, es. 22112003
-            stmt.setDouble(14, biglietto.getPrezzo()); // prezzo, es. 20
-            stmt.setString(15, biglietto.getIDbiglietto()); // id biglietto, RFI202501
+            stmt.setString(1, b.getStazionePartenza()); // partenza, es. PAOLA
+            stmt.setString(2, b.getStazioneArrivo()); // destinazione, es. SALERNO
+            stmt.setString(3, b.getID_treno()); // treno, es. IC 755
+            stmt.setString(4, b.getClasse()); // classe, es. BUSINESS
+            stmt.setString(5, b.getPosto()); // numero posto, es. 6A
+            stmt.setString(6, b.getPNR()); // numero prenotazione, es AW887
+            stmt.setString(7, b.getNomeUtente()); // nome utente, es. GIOVANNI
+            stmt.setString(8, b.getCognomeUtente()); // cognome utente, es. MAZZEI
+            stmt.setString(9, b.getCF()); // CF, es. MZZGNN03S22D122I
+            stmt.setString(10, b.getDataPartenza()); // data partenza, es. 08-05-2025
+            stmt.setString(11, b.getDataArrivo()); // data arrivo, es. 09-08-2025
+            stmt.setInt(12, b.getCarrozza()); // numero carrozza, es. 5
+            stmt.setInt(13, b.getIDfedelta()); // numero ID fedelta, es. 22112003
+            stmt.setDouble(14, b.getPrezzo()); // prezzo, es. 20
+            stmt.setString(15, b.getIDbiglietto()); // id biglietto, RFI202501
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -59,13 +59,14 @@ public class gestisciBigliettoDB {
                 biglietto.setCarrozza(rs.getInt("carrozza"));
                 biglietto.setIDfedelta(rs.getInt("idFedelta"));
                 biglietto.setPrezzo(rs.getDouble("prezzo"));
+                biglietto.setIDbiglietto(rs.getString("codBiglietto"));
 
                 risultato.add(biglietto);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return risultato;
     }
 
 }

@@ -10,37 +10,48 @@ public class DataBcreaTabelle {
              Statement stmt = conn.createStatement()) {
 
             stmt.execute("""
-                CREATE TABLE IF NOT EXISTS clienti (
-                    id INT PRIMARY KEY,
+                CREATE TABLE IF NOT EXISTS utenti (
+                    cf VARCHAR PRIMARY KEY,
                     nome VARCHAR(100),
-                    email VARCHAR(100),
+                    cognome VARCHAR(100),
+                    dataNascita VARCHAR(100),
                     isFedelta BOOLEAN
                 );
             """);
 
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS treni (
-                    id INT PRIMARY KEY,
-                    partenza VARCHAR(100),
-                    arrivo VARCHAR(100),
-                    data_partenza DATE,
-                    posti_disponibili INT
+                    id VARCHAR PRIMARY KEY,
+                    tipoTreno VARCHAR(100),
+                    oraArrivo VARCHAR(100),
+                    oraPartenza VARCHAR(100),
+                    statoTreno VARCHAR(100),
+                    postiDisponibili INT
                 );
             """);
 
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS biglietti (
-                    id INT PRIMARY KEY,
-                    cliente_id INT,
-                    treno_id INT,
-                    classe_servizio VARCHAR(20),
-                    prezzo DECIMAL(10,2),
-                    FOREIGN KEY (cliente_id) REFERENCES clienti(id),
-                    FOREIGN KEY (treno_id) REFERENCES treni(id)
+                    codBiglietto VARCHAR PRIMARY KEY,
+                    partenza VARCHAR(100),
+                    destinazione VARCHAR(100),
+                    treno VARCHAR(100),
+                    classe VARCHAR(100),
+                    posto VARCHAR(100),
+                    PNR VARCHAR(100),
+                    nomeU VARCHAR(100),
+                    cognomeU VARCHAR(100),
+                    cf VARCHAR(100),
+                    dataPart VARCHAR(100),
+                    dataArr VARCHAR(100),
+                    numCarrozza INT,
+                    idFedelta INT,
+                    prezzo DOUBLE,
+                    
+                    FOREIGN KEY (cf) REFERENCES clienti(id),
+                    FOREIGN KEY (treno) REFERENCES treni(id)
                 );
             """);
-
-            // Puoi aggiungere anche: prenotazioni, promozioni, notifiche...
 
         } catch (SQLException e) {
             e.printStackTrace();

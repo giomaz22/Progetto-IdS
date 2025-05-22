@@ -33,7 +33,12 @@ public class gestisciClienteDB {
                 String dataNascita = rs.getString("dataNascita");
                 boolean fedelta = rs.getBoolean("fedelta");
 
-                Utente u = new Utente(nome, cognome, codiceFiscale, dataNascita, fedelta);
+                Utente u = new Utente();
+                u.setCodiceFiscale(cf);
+                u.setNome(nome);
+                u.setCognome(cognome);
+                u.setDataNascita(dataNascita);
+                u.setCFedelta(fedelta);
                 return u;
             }
         } catch (SQLException e) {
