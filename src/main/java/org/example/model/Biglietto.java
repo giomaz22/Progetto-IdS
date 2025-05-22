@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Biglietto {
-    String stazionePartenza, stazioneArrivo, treno, classe, posto, PNR;
+    String IDbiglietto;
+    String stazionePartenza, stazioneArrivo, ID_treno, classe, posto, PNR;
     String nomeUtente, cognomeUtente, CF;
     String dataPartenza, dataArrivo;
-    int carrozza, codiceTreno, IDfedelta;
+    int carrozza, IDfedelta;
+    double prezzo;
 }
