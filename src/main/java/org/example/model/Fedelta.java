@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Fedelta {
-    int ID;
-    String nomePossessore, cognomePossessore, CFpossessore;
+
+    private String ID, CFpossessore;
+    private int puntiCarta;
 
 }

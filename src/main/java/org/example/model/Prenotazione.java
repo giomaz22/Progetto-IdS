@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Prenotazione {
-    String IDPrenotazione, dataPartenza, dataArrivo, postoPrenotazione;
+    private String PNR, dataScadenza, cf;
+    private int id_viaggio, posto, numCarrozza;
 }

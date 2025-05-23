@@ -12,13 +12,12 @@ import java.util.List;
 
 public class gestisciTrenoDB {
     public void addTreno(Treno treno) {
-        String sql = "INSERT INTO treni (id, tipoTreno, oraPartenza, oraArrivo, statoTreno, postiDisponibili) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO treni (id, tipoTreno, statoTreno, numCarrozze) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
             stmt.setString(1, treno.getIDtreno());
             stmt.setString(2, treno.getTipologia());
-            stmt.setString(3, treno.getOraPartenza());
-            stmt.setString(4, treno.getOraArrivo());
-            stmt.setInt(5, treno.getDisponibilitaPosti());
+            stmt.setString(3, treno.getStatoTreno());
+            stmt.setInt(4, treno.getNumCarrozze());
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -34,18 +33,14 @@ public class gestisciTrenoDB {
             if (rs.next()) {
                 String ID = rs.getString("id");
                 String tipoT = rs.getString("tipoTreno");
-                String oraArrivo = rs.getString("oraArrivo");
-                String oraPartenza = rs.getString("oraPartenza");
                 String stato = rs.getString("statoTreno");
-                int postiDisponibili = rs.getInt("postiDisponibili");
+                int numCarr = rs.getInt("numCarrozze");
 
                 Treno treno = new Treno();
                 treno.setIDtreno(ID);
                 treno.setTipologia(tipoT);
-                treno.setOraPartenza(oraPartenza);
-                treno.setOraArrivo(oraArrivo);
                 treno.setStatoTreno(stato);
-                treno.setDisponibilitaPosti(postiDisponibili);
+                treno.setNumCarrozze(numCarr);
                 return treno;
             }
         } catch (SQLException e) {
@@ -63,19 +58,15 @@ public class gestisciTrenoDB {
             while (rs.next()) {
                 String ID_1 = rs.getString("id");
                 String tipoT_1 = rs.getString("tipoTreno");
-                String oraArrivo_1 = rs.getString("oraArrivo");
-                String oraPartenza_1 = rs.getString("oraPartenza");
                 String stato_1 = rs.getString("statoTreno");
-                int postiDisponibili_1 = rs.getInt("postiDisponibili");
+                int numCarr_1 = rs.getInt("numCarrozze");
 
                 Treno treno = new Treno();
 
                 treno.setIDtreno(ID_1);
                 treno.setTipologia(tipoT_1);
-                treno.setOraArrivo(oraArrivo_1);
-                treno.setOraPartenza(oraPartenza_1);
                 treno.setStatoTreno(stato_1);
-                treno.setDisponibilitaPosti(postiDisponibili_1);
+                treno.setNumCarrozze(numCarr_1);
 
                 risultato.add(treno);
             }

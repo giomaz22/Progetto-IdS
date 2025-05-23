@@ -8,13 +8,13 @@ import java.sql.SQLException;
 
 public class gestisciClienteDB {
     public void addCliente(Utente utente) {
-        String sql = "INSERT INTO utenti (cf, nome, cognome, dataNascita, fedelta) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO utenti (cf, nome, cognome, dataNascita, IDfedelta) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
             stmt.setString(1, utente.getCodiceFiscale());
             stmt.setString(2, utente.getNome());
             stmt.setString(3, utente.getCognome());
             stmt.setString(4, utente.getDataNascita());
-            stmt.setBoolean(5, utente.isCFedelta());
+            stmt.setString(5, utente.getFedelta()); //devo fare controllo se è null?
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -31,14 +31,14 @@ public class gestisciClienteDB {
                 String cognome = rs.getString("cognome");
                 String codiceFiscale = rs.getString("cf");
                 String dataNascita = rs.getString("dataNascita");
-                boolean fedelta = rs.getBoolean("fedelta");
+                String fedelta = rs.getString("IDfedelta");
 
                 Utente u = new Utente();
                 u.setCodiceFiscale(cf);
                 u.setNome(nome);
                 u.setCognome(cognome);
                 u.setDataNascita(dataNascita);
-                u.setCFedelta(fedelta);
+                u.setFedelta(fedelta);
                 return u;
             }
         } catch (SQLException e) {

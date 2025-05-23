@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Treno {
-    String IDtreno, tipologia, oraPartenza, oraArrivo, statoTreno;
-    private int disponibilitaPosti;
+    private String IDtreno, tipologia, statoTreno;
+    private int numCarrozze;
     private List<Biglietto> bigliettiVendutiPerTreno = new ArrayList<>();
 }
