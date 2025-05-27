@@ -1,11 +1,9 @@
 package org.example.persistence;
 
+import lombok.SneakyThrows;
 import org.example.model.Viaggio;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +69,7 @@ public class gestisciViaggioDB {
         return risultati;
     }
 
-    public Viaggio trovaViaggioPerID(int id) {
+    public Viaggio trovaViaggioPerID(int id, Connection conn) {
         String sql = "SELECT * FROM viaggi WHERE id = ?";
         try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -105,5 +103,32 @@ public class gestisciViaggioDB {
         }
         return null;
     }
-    
+
+    public void incrementaPostiDisponibili(int idViaggio, int posti, Connection conn) throws SQLException {
+        Viaggio v = trovaViaggioPerID(idViaggio, conn);
+        if (v != null) {
+            aggiornaDisponibilitaPosti(idViaggio, v.getNumPostiDisponibili() + posti, conn);
+        }
+    }
+
+    public void aggiornaDisponibilitaPosti(int idViaggio, int nuoviPosti, Connection conn) throws SQLException {
+        String sql = "UPDATE viaggi SET numPostiDisponibili = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, nuoviPosti);
+            stmt.setInt(2, idViaggio);
+            stmt.executeUpdate();
+        }
+    }
+
+
+
+    // Trova viaggio per ID (senza transazione)
+    public Viaggio trovaViaggioPerID(int idViaggio) {
+        try {
+            return trovaViaggioPerID(idViaggio, DataBconnect.getConnection());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
