@@ -1,25 +1,26 @@
-package org.example.persistence;
+package org.example.persistence.dao;
 
-import lombok.SneakyThrows;
 import org.example.model.Viaggio;
+import org.example.persistence.DBConnectionSingleton;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class gestisciViaggioDB {
+public class ViaggioDAO {
     public void addNewViaggio(Viaggio v) {
-        String sql = "INSERT INTO viaggi (id, idTreno, numPostiDisponibili, oraPartenza, oraArrivo, stazionePartenza, stazioneArrivo, prezzo, classiDisponibili) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        String sql = "INSERT INTO viaggi (id, idTreno, numPostiDisponibili, oraPartenza, oraArrivo, data, stazionePartenza, stazioneArrivo, prezzo, classiDisponibili) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, v.getIDViaggio());
             stmt.setString(2, v.getIDtreno());
             stmt.setInt(3, v.getNumPostiDisponibili());
             stmt.setString(4, v.getOraPartenza());
             stmt.setString(5, v.getOraArrivo());
-            stmt.setString(6, v.getStazionePartenza());
-            stmt.setString(7, v.getStazioneArrivo());
-            stmt.setDouble(8, v.getPrezzo());
-            stmt.setString(9, v.getClassiDisponibili());
+            stmt.setString(6, v.getData());
+            stmt.setString(7, v.getStazionePartenza());
+            stmt.setString(8, v.getStazioneArrivo());
+            stmt.setDouble(9, v.getPrezzo());
+            stmt.setString(10, v.getClassiDisponibili());
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -38,7 +39,7 @@ public class gestisciViaggioDB {
             sql += " AND t.tipoTreno = ?";
         }
 
-        try (PreparedStatement stmt = org.example.persistence.DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, partenza);
             stmt.setString(2, arrivo);
             stmt.setDate(3, Date.valueOf(data));
@@ -54,6 +55,7 @@ public class gestisciViaggioDB {
                 viaggio.setNumPostiDisponibili(rs.getInt("numPostiDisponibili"));
                 viaggio.setOraPartenza(rs.getString("oraPartenza"));
                 viaggio.setOraArrivo(rs.getString("oraArrivo"));
+                viaggio.setData(rs.getString("data"));
                 viaggio.setStazionePartenza(rs.getString("stazionePartenza"));
                 viaggio.setStazioneArrivo(rs.getString("stazioneArrivo"));
                 viaggio.setPrezzo(rs.getDouble("prezzo"));
@@ -71,7 +73,7 @@ public class gestisciViaggioDB {
 
     public Viaggio trovaViaggioPerID(int id, Connection conn) {
         String sql = "SELECT * FROM viaggi WHERE id = ?";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -80,6 +82,7 @@ public class gestisciViaggioDB {
                 int postiDisponibili = rs.getInt("numPostiDisponibili");
                 String oraPartenza = rs.getString("oraPartenza");
                 String oraArrivo = rs.getString("oraArrivo");
+                String data = rs.getString("data");
                 String stazionePartenza = rs.getString("stazionePartenza");
                 String stazioneArrivo = rs.getString("stazioneArrivo");
                 double prezzo = rs.getDouble("prezzo");
@@ -92,6 +95,7 @@ public class gestisciViaggioDB {
                 v.setNumPostiDisponibili(postiDisponibili);
                 v.setOraPartenza(oraPartenza);
                 v.setOraArrivo(oraArrivo);
+                v.setData(data);
                 v.setStazionePartenza(stazionePartenza);
                 v.setStazioneArrivo(stazioneArrivo);
                 v.setPrezzo(prezzo);
@@ -104,13 +108,6 @@ public class gestisciViaggioDB {
         return null;
     }
 
-    public void incrementaPostiDisponibili(int idViaggio, int posti, Connection conn) throws SQLException {
-        Viaggio v = trovaViaggioPerID(idViaggio, conn);
-        if (v != null) {
-            aggiornaDisponibilitaPosti(idViaggio, v.getNumPostiDisponibili() + posti, conn);
-        }
-    }
-
     public void aggiornaDisponibilitaPosti(int idViaggio, int nuoviPosti, Connection conn) throws SQLException {
         String sql = "UPDATE viaggi SET numPostiDisponibili = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -120,15 +117,4 @@ public class gestisciViaggioDB {
         }
     }
 
-
-
-    // Trova viaggio per ID (senza transazione)
-    public Viaggio trovaViaggioPerID(int idViaggio) {
-        try {
-            return trovaViaggioPerID(idViaggio, DataBconnect.getConnection());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

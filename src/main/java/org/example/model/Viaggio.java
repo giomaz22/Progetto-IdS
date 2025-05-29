@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class Viaggio {
     private int IDViaggio, numPostiDisponibili;
     private String IDtreno, oraPartenza, oraArrivo, stazionePartenza, stazioneArrivo, classiDisponibili;
+    private String data;
     private double prezzo;
 }

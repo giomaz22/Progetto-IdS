@@ -1,6 +1,7 @@
-package org.example.persistence;
+package org.example.persistence.dao;
 
 import org.example.model.Biglietto;
+import org.example.persistence.DBConnectionSingleton;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,7 +21,7 @@ implementati metodi utili per:
 - elimina biglietti.
  */
 
-public class gestisciBigliettoDB {
+public class BigliettoDAO {
 
     // Inserimento biglietto con connessione esterna (per transazione)
     public void addBiglietto(Biglietto b, Connection conn) throws SQLException {
@@ -41,7 +42,7 @@ public class gestisciBigliettoDB {
     // Metodo di ricerca biglietto (senza transazione)
     public Biglietto trovaBigliettoPerCodice(String codice) {
         String sql = "SELECT * FROM biglietti WHERE codBiglietto = ?";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, codice);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -79,7 +80,7 @@ public class gestisciBigliettoDB {
     public List<Biglietto> bigliettiPerUtente(String cf) {
         List<Biglietto> lista = new ArrayList<>();
         String sql = "SELECT * FROM biglietti WHERE cf = ?";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, cf);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {

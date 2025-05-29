@@ -1,8 +1,7 @@
-package org.example.persistence;
+package org.example.persistence.dao;
 
-import org.example.model.Biglietto;
 import org.example.model.Treno;
-import org.example.model.Utente;
+import org.example.persistence.DBConnectionSingleton;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,10 +9,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class gestisciTrenoDB {
+public class TrenoDAO {
     public void addTreno(Treno treno) {
         String sql = "INSERT INTO treni (id, tipoTreno, statoTreno, numCarrozze) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, treno.getIDtreno());
             stmt.setString(2, treno.getTipologia());
             stmt.setString(3, treno.getStatoTreno());
@@ -27,7 +26,7 @@ public class gestisciTrenoDB {
 
     public Treno trovaTrenoPerID(String id) {
         String sql = "SELECT * FROM treni WHERE id = ?";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -53,7 +52,7 @@ public class gestisciTrenoDB {
         List<Treno> risultato = new ArrayList<>();
         String sql = "SELECT * FROM treni";
 
-        try(PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)){
+        try(PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)){
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 String ID_1 = rs.getString("id");

@@ -1,13 +1,14 @@
 package org.example.persistence;
 
 import org.example.model.Treno;
+import org.example.persistence.dao.TrenoDAO;
 
-public class popolaDataB {
+public class popolaDBUtil {
     public static void main(String[] args) {
-        DataBcreaTabelle.init(); // creo nuove tabelle
+        CreaTabelleUtil.init(); // creo nuove tabelle
 
-        gestisciTrenoDB trenoDB;
-        trenoDB = new gestisciTrenoDB();
+        TrenoDAO trenoDB;
+        trenoDB = new TrenoDAO();
 
         Treno treno = new Treno();
         treno.setIDtreno("RE-5584");

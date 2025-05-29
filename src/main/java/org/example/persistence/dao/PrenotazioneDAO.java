@@ -1,7 +1,8 @@
-package org.example.persistence;
+package org.example.persistence.dao;
 
 
 import org.example.model.Prenotazione;
+import org.example.persistence.DBConnectionSingleton;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class gestisciPrenotazioneDB {
+public class PrenotazioneDAO {
     public void addPrenotazione(Prenotazione p, Connection conn) throws SQLException {
         String sql = "INSERT INTO prenotazioni (PNR, cf, idViaggio, dataScadenza, posto, numCarrozza) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -26,7 +27,7 @@ public class gestisciPrenotazioneDB {
 
     public Prenotazione trovaPerPNR(String pnr) {
         String sql = "SELECT * FROM prenotazioni WHERE PNR = ?";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, pnr);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -45,10 +46,10 @@ public class gestisciPrenotazioneDB {
         return null;
     }
 
-    public void eliminaPrenotazione(String pnr, Connection conn) throws SQLException {
+    public void eliminaPrenotazione(Prenotazione p, Connection conn) throws SQLException {
         String sql = "DELETE FROM prenotazioni WHERE PNR = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, pnr);
+            stmt.setString(1, p.getPNR());
             stmt.executeUpdate();
         }
     }
@@ -56,7 +57,7 @@ public class gestisciPrenotazioneDB {
     public List<Prenotazione> tutteLePrenotazioni() {
         List<Prenotazione> lista = new ArrayList<>();
         String sql = "SELECT * FROM prenotazioni";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Prenotazione p = new Prenotazione();

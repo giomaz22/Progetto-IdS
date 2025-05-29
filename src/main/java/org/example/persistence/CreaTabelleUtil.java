@@ -4,21 +4,28 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DataBcreaTabelle {
+public class CreaTabelleUtil {
     public static void init() {
-        try (Connection conn = DataBconnect.getConnection();
+        try (Connection conn = DBConnectionSingleton.getConnection();
              Statement stmt = conn.createStatement()) {
+
 
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS utenti (
                     cf VARCHAR PRIMARY KEY,
                     nome VARCHAR(100),
                     cognome VARCHAR(100),
-                    dataNascita VARCHAR(100),
-                    IDfedelta VARCHAR(100),
-                    
-                    FOREIGN KEY (IDfedelta) REFERENCES fedelta(id)
+                    dataNascita VARCHAR(100)
                 );  
+            """);
+
+            stmt.execute("""
+                CREATE TABLE IF NOT EXISTS treni (
+                    id VARCHAR PRIMARY KEY,
+                    tipoTreno VARCHAR(100),
+                    statoTreno VARCHAR(100),
+                    numCarrozze INT
+                );
             """);
 
             stmt.execute("""
@@ -31,18 +38,6 @@ public class DataBcreaTabelle {
                 )
             """);
 
-            // Quando poi andremo a lavorare sulle prenotazioni/acquisto biglietto
-            // Mi devo ricordare che qualunque UPDATE venga fatto su questa tabella
-            // Per quanto riguarda numPostiDisponibili, oraPartenza/oraArrivo (In caso di ritardi ecc. ecc.)
-            // Vanno tutte fatte in TRANSAZIONE quindi accertarsi che l'operazione risulti atomica
-            // e che rispetto le proprietà ACID
-
-            //classiDisponibili è una stringa formattata come segue:
-            // "economy business luxury"
-            // quindi simula una lista, quando devo fare il parsing uso StringTokenizer con divisore di base
-
-
-            //oraPartenza, oraArrivo definite secondo pattern dd/MM/yyyy HH:mm:ss es 13/08/2024 13:30:00
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS viaggi (
                     id INT PRIMARY KEY,
@@ -50,6 +45,7 @@ public class DataBcreaTabelle {
                     numPostiDisponibili INT,
                     oraPartenza VARCHAR(100),
                     oraArrivo VARCHAR(100),
+                    data VARCHAR(100),
                     stazionePartenza VARCHAR(100),
                     stazioneArrivo VARCHAR(100),
                     prezzo DOUBLE,
@@ -57,15 +53,6 @@ public class DataBcreaTabelle {
                     
                     FOREIGN KEY (idTreno) REFERENCES treni(id)
                 ) 
-            """);
-
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS treni (
-                    id VARCHAR PRIMARY KEY,
-                    tipoTreno VARCHAR(100),
-                    statoTreno VARCHAR(100),
-                    numCarrozze INT
-                );
             """);
 
             // Logica di business: ogni tot si controllano tutte le prenotazioni
@@ -80,7 +67,7 @@ public class DataBcreaTabelle {
                     cf VARCHAR(100),
                     idViaggio INT,
                     dataScadenza VARCHAR(100),
-                    posto INT(100),
+                    posto INT,
                     numCarrozza INT,
                     
                     FOREIGN KEY (idViaggio) REFERENCES viaggi(id),
@@ -123,18 +110,26 @@ public class DataBcreaTabelle {
                     codBiglietto VARCHAR PRIMARY KEY,
                     idViaggio INT,
                     classe VARCHAR(100),
-                    posto INT(100),
+                    posto INT,
                     PNR VARCHAR(100),
                     cf VARCHAR(100),
                     numCarrozza INT,
                     
-                    FOREIGN KEY (cf) REFERENCES utenti(id),
+                    FOREIGN KEY (cf) REFERENCES utenti(cf),
                     FOREIGN KEY (idViaggio) REFERENCES viaggi(id),
                     FOREIGN KEY (PNR) REFERENCES prenotazioni(PNR)
                 );
+            """);
+
+            stmt.execute("""
+                CREATE TABLE IF NOT EXISTS promozioni (
+                    CodicePromozione VARCHAR(100) PRIMARY KEY,
+                    PercentualeSconto INT
+                )
             """);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 }

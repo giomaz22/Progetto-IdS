@@ -1,16 +1,16 @@
-package org.example.persistence;
+package org.example.persistence.dao;
 
 import org.example.model.Fedelta;
-import org.example.model.Treno;
+import org.example.persistence.DBConnectionSingleton;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class gestisciFedeltaDB {
+public class FedeltaDAO {
     public void addCFedeltaPerCliente(Fedelta f) {
         String sql = "INSERT INTO fedelta (id, cf, punti) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, f.getID());
             stmt.setString(2, f.getCFpossessore());
             stmt.setInt(3, f.getPuntiCarta());
@@ -21,9 +21,9 @@ public class gestisciFedeltaDB {
         }
     }
 
-    public Fedelta trovaCartaPerIDUtente(String cf) {
+    public Fedelta trovaCartaPerCFUtente(String cf) {
         String sql = "SELECT * FROM fedelta WHERE cf = ?";
-        try (PreparedStatement stmt = DataBconnect.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, cf);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
