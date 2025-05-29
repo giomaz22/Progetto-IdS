@@ -21,4 +21,11 @@ public class FedeltaService {
         return fedeltaDataBase.trovaCartaPerCFUtente(cf);
     }
 
+    // questo metodo può tornarmi utile successivamente per la ricerca delle promozioni
+    public boolean isFedeltaUtente(String cf){
+        if(findFedeltaByCF(cf) == null)
+            return false;
+        return true;
+    }
+
 }

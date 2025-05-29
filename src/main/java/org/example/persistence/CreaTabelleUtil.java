@@ -46,6 +46,7 @@ public class CreaTabelleUtil {
                     oraPartenza VARCHAR(100),
                     oraArrivo VARCHAR(100),
                     data VARCHAR(100),
+                    
                     stazionePartenza VARCHAR(100),
                     stazioneArrivo VARCHAR(100),
                     prezzo DOUBLE,
@@ -124,7 +125,11 @@ public class CreaTabelleUtil {
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS promozioni (
                     CodicePromozione VARCHAR(100) PRIMARY KEY,
-                    PercentualeSconto INT
+                    PercentualeSconto INT,
+                    soloFedelta BOOLEAN,
+                    tipoTreno VARCHAR,
+                    inizioPromo VARCHAR,
+                    finePromo VARCHAR
                 )
             """);
         } catch (SQLException e) {
