@@ -1,0 +1,106 @@
+2025-05-23 11:03:39.870291+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENTI" not found; SQL statement:
+    CREATE TABLE IF NOT EXISTS biglietti (
+        codBiglietto VARCHAR PRIMARY KEY,
+        partenza VARCHAR(100),
+        destinazione VARCHAR(100),
+        treno VARCHAR(100),
+        classe VARCHAR(100),
+        posto VARCHAR(100),
+        PNR VARCHAR(100),
+        nomeU VARCHAR(100),
+        cognomeU VARCHAR(100),
+        cf VARCHAR(100),
+        dataPart VARCHAR(100),
+        dataArr VARCHAR(100),
+        numCarrozza INT,
+        idFedelta INT,
+        prezzo DOUBLE,
+
+        FOREIGN KEY (cf) REFERENCES clienti(id),
+        FOREIGN KEY (treno) REFERENCES treni(id)
+    ) [42102-224]
+2025-05-23 11:03:40.463151+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Parameter "#6" is not set; SQL statement:
+INSERT INTO treni (id, tipoTreno, oraPartenza, oraArrivo, statoTreno, postiDisponibili) VALUES (?, ?, ?, ?, ?, ?) [90012-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:658)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.expression.Parameter.checkSet(Parameter.java:75)
+	at org.h2.command.Prepared.checkParameters(Prepared.java:207)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:159)
+	at org.h2.command.Command.executeUpdate(Command.java:256)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdateInternal(JdbcPreparedStatement.java:216)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdate(JdbcPreparedStatement.java:174)
+	at org.example.persistence.dao.TrenoDAO.addTreno(gestisciTrenoDB.java:23)
+	at org.example.persistence.popolaDBUtil.main(popolaDataB.java:19)
+2025-05-23 11:05:28.466480+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "ID" not found; SQL statement:
+    CREATE TABLE IF NOT EXISTS biglietti (
+        codBiglietto VARCHAR PRIMARY KEY,
+        partenza VARCHAR(100),
+        destinazione VARCHAR(100),
+        treno VARCHAR(100),
+        classe VARCHAR(100),
+        posto VARCHAR(100),
+        PNR VARCHAR(100),
+        nomeU VARCHAR(100),
+        cognomeU VARCHAR(100),
+        cf VARCHAR(100),
+        dataPart VARCHAR(100),
+        dataArr VARCHAR(100),
+        numCarrozza INT,
+        idFedelta INT,
+        prezzo DOUBLE,
+
+        FOREIGN KEY (cf) REFERENCES utenti(id),
+        FOREIGN KEY (treno) REFERENCES treni(id)
+    ) [42122-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.table.Table.getColumn(Table.java:759)
+	at org.h2.table.IndexColumn.mapColumns(IndexColumn.java:184)
+	at org.h2.command.ddl.AlterTableAddConstraint.tryUpdate(AlterTableAddConstraint.java:219)
+	at org.h2.command.ddl.AlterTableAddConstraint.update(AlterTableAddConstraint.java:74)
+	at org.h2.command.ddl.AlterTable.update(AlterTable.java:46)
+	at org.h2.command.ddl.CommandWithColumns.createConstraints(CommandWithColumns.java:83)
+	at org.h2.command.ddl.CreateTable.update(CreateTable.java:134)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:169)
+	at org.h2.command.Command.executeUpdate(Command.java:256)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:262)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:231)
+	at org.example.persistence.CreaTabelleUtil.init(DataBcreaTabelle.java:33)
+	at org.example.persistence.popolaDBUtil.main(popolaDataB.java:7)
+2025-05-23 11:05:28.598241+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Parameter "#6" is not set; SQL statement:
+INSERT INTO treni (id, tipoTreno, oraPartenza, oraArrivo, statoTreno, postiDisponibili) VALUES (?, ?, ?, ?, ?, ?) [90012-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:658)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.expression.Parameter.checkSet(Parameter.java:75)
+	at org.h2.command.Prepared.checkParameters(Prepared.java:207)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:159)
+	at org.h2.command.Command.executeUpdate(Command.java:256)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdateInternal(JdbcPreparedStatement.java:216)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdate(JdbcPreparedStatement.java:174)
+	at org.example.persistence.dao.TrenoDAO.addTreno(gestisciTrenoDB.java:23)
+	at org.example.persistence.popolaDBUtil.main(popolaDataB.java:19)
+2025-05-23 11:15:39.875141+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Parameter "#6" is not set; SQL statement:
+INSERT INTO treni (id, tipoTreno, oraPartenza, oraArrivo, statoTreno, postiDisponibili) VALUES (?, ?, ?, ?, ?, ?) [90012-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:658)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.expression.Parameter.checkSet(Parameter.java:75)
+	at org.h2.command.Prepared.checkParameters(Prepared.java:207)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:159)
+	at org.h2.command.Command.executeUpdate(Command.java:256)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdateInternal(JdbcPreparedStatement.java:216)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdate(JdbcPreparedStatement.java:174)
+	at org.example.persistence.dao.TrenoDAO.addTreno(gestisciTrenoDB.java:23)
+	at org.example.persistence.popolaDBUtil.main(popolaDataB.java:19)
