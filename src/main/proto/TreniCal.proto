@@ -1,0 +1,208 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.example.grpc";
+option java_outer_classname = "TrenicalProto";
+
+service TrenicalService {
+  rpc CercaViaggi(CercaViaggiRequest) returns (CercaViaggiResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc RegistraUtente(RegistraRequest) returns (RegistraResponse);
+  rpc SottoscriviFedelta(FedeltaRequest) returns (FedeltaResponse);
+  rpc PrenotaViaggio(PrenotaRequest) returns (PrenotaResponse);
+  rpc AcquistaBiglietto(AcquistaBigliettoRequest) returns (AcquistaBigliettoResponse);
+  rpc PromozioniAttive(PromoAttiveRequest) returns (PromoAttiveResponse);
+  rpc ModificaBiglietto(ModificaBigliettoRequest) returns (ModificaBigliettoResponse);
+  rpc AndamentoTrenoSpecifico(IscrivimiTrenoSpeRequest) returns (IscrivimiTrenoSpeResponse);
+  rpc NotificheAutomatiche(IscriviUtenteRequest) returns (IscriviUtenteResponse);
+  /*
+  Il client chiama NotificheAutomatiche(cf) → il server tiene aperto lo stream. Server Streaming
+
+Quando nel backend si verifica un evento (cancellazione, cambio orario...), il server:
+- verifica gli utenti con biglietto/prenotazione su quel viaggio
+- invia una NotificaCambiamentoViaggio a ciascun client connesso (tramite lo stream)
+
+Soluzione asincrona e scalabile
+   */
+  rpc FedeltaNotificaPromoOfferte(AccettiNotificaFedRequest) returns(AccettiNotificaFedResponse);
+}
+
+// DTO
+
+message BigliettoDTO {
+  string codBiglietto = 1;
+  int32 numCarrozza = 2;
+  int32 postoAssegnato = 3;
+  ViaggioDTO viaggioAcquistato = 4;
+}
+
+message ViaggioDTO {
+  int32 idViaggio = 1;
+  string oraPartenza = 2;
+  string oraArrivo = 3;
+  string data = 4;
+  string stazionePartenza = 5;
+  string stazioneArrivo = 6;
+  int32 numeroPostiDisponibili = 7;
+  double prezzo = 8;
+  string classiDisponibili = 9;
+}
+
+message UtenteDTO {
+  string nome = 1;
+  string cognome = 2;
+  string codiceFiscale = 3;
+  string dataDiNascita = 4;
+  string email = 5;
+  string password = 6;
+  bool admin = 7;
+}
+
+message FedeltaDTO {
+  string IDcarta = 1;
+  string CFpossess = 2;
+  int32 puntiFed = 3;
+}
+
+message PromozioneDTO {
+  string promoCode = 1;
+  int32 percentSconto = 2;
+  bool siOnoFedelta = 3;
+  string tipoTreno = 4;
+  string inizioPromo = 5;
+  string finePromo = 6;
+}
+
+message PrenotazioneDTO {
+  string numPren = 1;
+  string scadenzaPrenotazione = 2;
+  string codFis = 3;
+  int32 idViaggio = 4;
+  int32 posto = 5;
+  int32 carrozza = 6;
+}
+
+
+// MESSAGGI DI RICHIESTA
+
+message IscriviUtenteRequest {
+  string codiceFiscale = 1;
+}
+
+message AccettiNotificaFedRequest {
+  FedeltaDTO laTuaCarta = 1;
+  bool desideroContatto = 2;
+}
+
+message IscrivimiTrenoSpeRequest {
+  bool registrami = 1;
+  string idTreno = 2;
+}
+
+message CercaViaggiRequest {
+  string stazionePartenza = 1;
+  string stazioneArrivo = 2;
+  string data = 3;
+  string tipoTreno = 4;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message PromoAttiveRequest {
+  bool haiFedelta = 1; // devo vedere se si tratta di promo per Fedeltà o meno
+  string tipoTreno = 2;
+  string quandoParti = 3;  // verifico se nella data di partenza c'è una promo attiva o meno
+  string quandoTorni = 4;
+
+}
+
+message RegistraRequest {
+  UtenteDTO utenteDaRegistrare = 1;
+}
+
+message AcquistaBigliettoRequest {
+  int32 viaggioID = 1;
+  string cfUtente = 2;
+  string numCarta = 3;
+}
+
+message PrenotaRequest {
+  int32 viaggioID = 1;
+  string cfUtente = 2;
+}
+
+message FedeltaRequest {
+  string codFiscale = 1;
+}
+
+message ModificaBigliettoRequest {
+  BigliettoDTO bigliettoGiaAcquistato = 1;
+  string nuovaData = 2;
+  string nuovaOraPartenza = 3;
+  string nuovaClasse = 4;
+
+}
+
+// MESSAGGI DI RISPOSTA
+
+message CercaViaggiResponse {
+  repeated ViaggioDTO viaggi = 1;
+}
+
+message LoginResponse {
+  UtenteDTO loginUt = 1;
+  FedeltaDTO loginFed = 2; // null se l'utente non ha cartaFed
+}
+
+message PromoAttiveResponse {
+  string codPromoAttiva = 1; // restituisci i codici delle promo attive (all'utente servirà solo applicare il codice)
+  string message = 2; // (restituisco un messaggio "Promo cod. CALABRIA2" attiva con sconto pari a + "scontoPercent")
+}
+
+message RegistraResponse {
+  bool successo = 1; // ritorna True se Reg è andata a buon fine, false altrimenti
+  string message = 2; // messaggio di comunicazione
+}
+
+message AcquistaBigliettoResponse {
+  bool successo = 1;
+  string messaggioConferma = 2;
+  BigliettoDTO dettagliBiglietto = 3;
+}
+
+message PrenotaResponse {
+  bool successo = 1;
+  string messaggio = 2; // messaggio di prenotazione con ricordo data di scadenza, altrimenti è invalida
+  PrenotazioneDTO viaggioPrenotato = 3;
+}
+
+message FedeltaResponse {
+  bool successo = 1;
+  string messaggioConfermaFedelta = 2;
+  FedeltaDTO dettagliCarta = 3;
+}
+
+message ModificaBigliettoResponse {
+  bool successo = 1;
+  string messaggioModificaEffettuata = 2;
+  BigliettoDTO bigliettoAggiornato = 3;
+}
+
+message IscrivimiTrenoSpeResponse {
+  string informazioni = 1;
+}
+
+message AccettiNotificaFedResponse {
+  PromozioneDTO promoPerTe = 1;
+  string offertaSpeciale = 2;
+}
+
+message IscriviUtenteResponse {
+  string idViaggio = 1;
+  string tipoEvento = 2;     // es: "CANCELLATO", "CAMBIO_ORARIO", "CAMBIO_BINARIO"
+  string messaggio = 3;
+  string orarioAggiornato = 4;
+}

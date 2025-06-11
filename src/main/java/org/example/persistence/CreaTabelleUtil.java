@@ -15,7 +15,10 @@ public class CreaTabelleUtil {
                     cf VARCHAR PRIMARY KEY,
                     nome VARCHAR(100),
                     cognome VARCHAR(100),
-                    dataNascita VARCHAR(100)
+                    dataNascita VARCHAR(100),
+                    email VARCHAR(100),
+                    password VARCHAR,
+                    isAdmin BOOLEAN,
                 );  
             """);
 

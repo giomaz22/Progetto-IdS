@@ -12,5 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Utente {
     private String nome, cognome, codiceFiscale, dataNascita;
-
+    private String password;
+    private String email;
+    private boolean isAmministratore;
 }

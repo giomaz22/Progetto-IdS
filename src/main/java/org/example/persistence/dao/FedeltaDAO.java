@@ -43,5 +43,21 @@ public class FedeltaDAO {
         return null;
     }
 
+    public void aggiornaPunti(Fedelta f) {
+        String sql = "UPDATE fedelta SET punti = ?, WHERE id = ?";
+
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, f.getPuntiCarta());
+            stmt.setString(2, f.getID());
+
+            stmt.executeUpdate();
+            System.out.println("Punti aggiornati per " + f.getID());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 }

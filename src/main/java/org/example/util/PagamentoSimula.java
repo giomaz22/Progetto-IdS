@@ -33,7 +33,7 @@ public class PagamentoSimula {
         return true;
     }
 
-    private static boolean checkLuhn(String numCarta) {
+    public static boolean checkLuhn(String numCarta) {
         if (numCarta == null || numCarta.length() != 16 || !numCarta.matches("\\d+")) return false;
 
         int somma = 0;

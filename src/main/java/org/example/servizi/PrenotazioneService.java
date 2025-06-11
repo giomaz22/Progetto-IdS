@@ -1,5 +1,6 @@
 package org.example.servizi;
 
+import lombok.SneakyThrows;
 import org.example.model.Biglietto;
 import org.example.model.Prenotazione;
 import org.example.persistence.DBConnectionSingleton;
@@ -31,7 +32,7 @@ public class PrenotazioneService {
             conn = DBConnectionSingleton.getConnection();
             conn.setAutoCommit(false);
             int viaggioID = p.getId_viaggio();
-            int postiDisponibili = viaggioDataBase.trovaViaggioPerID(viaggioID).getNumPostiDisponibili();
+            int postiDisponibili = viaggioDataBase.trovaViaggioPerID(viaggioID, conn).getNumPostiDisponibili();
             if(postiDisponibili > 0){
                 prenotDataBase.addPrenotazione(p, conn);
                 viaggioDataBase.aggiornaDisponibilitaPosti(p.getId_viaggio(), postiDisponibili - 1, conn);
@@ -75,6 +76,7 @@ public class PrenotazioneService {
         }
     }
 
+    @SneakyThrows
     public Prenotazione findByPNR(String PNR) throws SQLException {
         return prenotDataBase.trovaPerPNR(PNR);
     }

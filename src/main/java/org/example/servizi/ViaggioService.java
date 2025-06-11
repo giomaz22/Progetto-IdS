@@ -1,5 +1,6 @@
 package org.example.servizi;
 
+import lombok.SneakyThrows;
 import org.example.model.Viaggio;
 import org.example.persistence.DBConnectionSingleton;
 import org.example.persistence.dao.ViaggioDAO;
@@ -23,9 +24,14 @@ public class ViaggioService {
         return viaggioDataBase.cercaViaggi(S_partenza, S_arrivo, data, tipoTreno);
     }
 
-    public Viaggio findViaggioById(int id) throws SQLException {
+    private Viaggio trovaConId(int id) throws SQLException {
         Connection conn = DBConnectionSingleton.getConnection();
         return viaggioDataBase.trovaViaggioPerID(id, conn);
+    }
+
+    @SneakyThrows
+    public Viaggio findViaggioById(int id){
+        return trovaConId(id);
     }
 
     // questo metodo si usa quando si cancella una prenotazione o un biglietto
@@ -80,4 +86,5 @@ public class ViaggioService {
         }
 
     }
+
 }
