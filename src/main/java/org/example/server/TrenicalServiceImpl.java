@@ -1,5 +1,6 @@
 package org.example.server;
 
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
 import org.example.grpc.*;
@@ -12,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static org.example.util.ClassiTrenoUtil.scegliClasseBaseCasuale;
 import static org.example.util.CodiceCartaFedelta.generaCodice;
+import static org.example.util.PagamentoSimula.checkLuhn;
 
 public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImplBase {
     private ViaggioService viaggioService = new ViaggioService();
@@ -34,7 +37,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
         List<Viaggio> viaggiRet = viaggioService.ricercaViaggi(stazionePartenza, stazioneArrivo, data, tipoTreno);
         List<ViaggioDTO> viaggioDTOret = new ArrayList<>();
 
-        for(Viaggio v : viaggiRet) {
+        for (Viaggio v : viaggiRet) {
             ViaggioDTO viaggioNuovo = ViaggioDTO.newBuilder()
                     .setIdViaggio(v.getIDViaggio())
                     .setData(v.getData())
@@ -107,12 +110,14 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
             responseObserver.onNext(response);
             responseObserver.onCompleted();
 
+        }else{
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Credenziali errate").asRuntimeException());
         }
 
     }
 
     @Override //COMPLETATO
-    public void registraUtente(RegistraRequest request, StreamObserver<RegistraResponse> responseObserver){
+    public void registraUtente(RegistraRequest request, StreamObserver<RegistraResponse> responseObserver) {
         String codFiscale = request.getUtenteDaRegistrare().getCodiceFiscale();
         String nome = request.getUtenteDaRegistrare().getNome();
         String cognome = request.getUtenteDaRegistrare().getCognome();
@@ -124,7 +129,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
         boolean giaPresenteCf = clienteService.findUtenteByCf(codFiscale) != null;
         boolean giaPresenteEmail = clienteService.findUtenteByEmail(email) != null;
 
-        if(!giaPresenteCf || !giaPresenteEmail){
+        if (!giaPresenteCf || !giaPresenteEmail) {
             Utente daRegistrare = new Utente(nome, cognome, codFiscale, dataNascita, password, email, admin);
             clienteService.addCliente(daRegistrare);
 
@@ -141,6 +146,9 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
                     .setSuccesso(false)
                     .setMessage("Utente già presente nel database")
                     .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
     }
 
@@ -150,7 +158,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
 
         boolean giaFedele = fedeltaService.findFedeltaByCF(codFiscale) != null;
 
-        if(!giaFedele){
+        if (!giaFedele) {
             String IDcarta = generaCodice();
             int puntiNuovaIscrizione = 20; // ai nuovi iscritti diamo dei punti bonus
 
@@ -170,7 +178,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
                     .setMessaggioConfermaFedelta("CF: " + codFiscale + " è iscritto al programma fedeltà")
                     .setDettagliCarta(fed)
                     .build();
-        }else{
+        } else {
             Fedelta cartaEsistente = fedeltaService.findFedeltaByCF(codFiscale);
             FedeltaDTO fed = FedeltaDTO.newBuilder()
                     .setCFpossess(cartaEsistente.getCFpossessore())
@@ -183,6 +191,9 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
                     .setMessaggioConfermaFedelta("Utente già iscritto al programma fedeltà")
                     .setDettagliCarta(fed)
                     .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
     }
 
@@ -191,115 +202,263 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
     public void prenotaViaggio(PrenotaRequest request, StreamObserver<PrenotaResponse> responseObserver) {
         int idViaggio = request.getViaggioID();
         String cfUt = request.getCfUtente();
-        /*
-        Supponiamo che nella lista di viaggi che il server ha mandato al cliente,
-        questi ne abbia scelto uno e ora vuole prenotarlo.
 
-        Poichè l'utente cerca i viaggi in base ad altri parametri, assumiamo che il
-        posto e il numero di carrozza siano random.
-         */
         Viaggio v = viaggioService.findViaggioById(idViaggio);
 
-        String PNR = "PNR" + System.currentTimeMillis(); // numero prenotazione reso univoco
+        String PNR = "PNR" + System.currentTimeMillis();
 
-        LocalDateTime dataConvertita = LocalDateTime.parse(v.getData());
-        LocalDateTime dataScadenzaLDT = dataConvertita.minusHours(12);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        String dataScadenza = dataScadenzaLDT.format(formatter);
+        LocalDateTime dataViaggio = LocalDateTime.parse(v.getData());
+        LocalDateTime dataScadenza = dataViaggio.minusHours(12);
+        String scadenzaFormattata = dataScadenza.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
 
         int numCarrozza = new Random().nextInt(6) + 1;
         int posto = new Random().nextInt(30) + 1;
 
-        Prenotazione nuovaP = new Prenotazione(PNR, dataScadenza, cfUt, idViaggio, posto, numCarrozza);
+        Prenotazione nuovaP = new Prenotazione(PNR, scadenzaFormattata, cfUt, idViaggio, posto, numCarrozza);
 
-        PrenotazioneDTO prenotazione = PrenotazioneDTO.newBuilder()
-                .setNumPren(nuovaP.getPNR())
-                .setScadenzaPrenotazione(nuovaP.getDataScadenza())
-                .setCodFis(nuovaP.getCf())
-                .setIdViaggio(nuovaP.getId_viaggio())
-                .setPosto(nuovaP.getPosto())
-                .setCarrozza(nuovaP.getNumCarrozza())                                   // carrozza simulata
-                .build();
-
-        boolean preNonTrovata = prenotazioneService.findByPNR(PNR) == null;
-        if(preNonTrovata)
+        // Verifica che non esista già
+        if (prenotazioneService.findByPNR(PNR) == null) {
             prenotazioneService.add(nuovaP);
+        }
+        viaggioService.decrementaPostiDisponibili(idViaggio, 1);
+
+        PrenotazioneDTO dto = PrenotazioneDTO.newBuilder()
+                .setNumPren(PNR)
+                .setScadenzaPrenotazione(scadenzaFormattata)
+                .setCodFis(cfUt)
+                .setIdViaggio(idViaggio)
+                .setPosto(posto)
+                .setCarrozza(numCarrozza)
+                .build();
 
         PrenotaResponse response = PrenotaResponse.newBuilder()
                 .setSuccesso(true)
-                .setMessaggio("Prenotazione effettuata con successo. Scade il " + nuovaP.getDataScadenza())
-                .setViaggioPrenotato(prenotazione)
+                .setMessaggio("Prenotazione effettuata con successo. Scade il " + scadenzaFormattata)
+                .setViaggioPrenotato(dto)
                 .build();
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+    }
 
-        LocalDateTime oraCorrente = LocalDateTime.now();
-        if(dataScadenzaLDT.isAfter(oraCorrente)){
-            prenotazioneService.deleteP(nuovaP);
-            PrenotaResponse resp = PrenotaResponse.newBuilder()
-                    .setSuccesso(false)
-                    .setMessaggio("Prenotazione scaduta")
+    @SneakyThrows //COMPLETATO
+    @Override
+    public void acquistaBiglietto(AcquistaBigliettoRequest request, StreamObserver<AcquistaBigliettoResponse> responseObserver) {
+        int idViaggio = request.getViaggioID();
+        String cfUte = request.getCfUtente();
+        String cartaCredito = request.getNumCarta();
+        String PNR = request.getPNR();
+
+        //gestisco prima la parte relativa alle promozioni che determinano il prezzo del biglietto?
+
+        //acquisto un biglietto già prenotato
+        if (PNR != null) {
+            Prenotazione pre = prenotazioneService.findByPNR(PNR);
+            LocalDateTime oraCorrente = LocalDateTime.now();
+            LocalDateTime oraScadenzaPrenotazione = LocalDateTime.parse(pre.getDataScadenza());
+            if (oraCorrente.isBefore(oraScadenzaPrenotazione)) {
+                Viaggio viaggioPrenotato = viaggioService.findViaggioById(pre.getId_viaggio());
+                ViaggioDTO nuovoViaggio = ViaggioDTO.newBuilder()
+                        .setIdViaggio(viaggioPrenotato.getIDViaggio())
+                        .setOraPartenza(viaggioPrenotato.getOraPartenza())
+                        .setOraArrivo(viaggioPrenotato.getOraArrivo())
+                        .setStazionePartenza(viaggioPrenotato.getStazionePartenza())
+                        .setStazioneArrivo(viaggioPrenotato.getStazioneArrivo())
+                        .setPrezzo(viaggioPrenotato.getPrezzo())
+                        .setNumeroPostiDisponibili(viaggioPrenotato.getNumPostiDisponibili())
+                        .setClassiDisponibili(viaggioPrenotato.getClassiDisponibili())
+                        .build();
+
+                String codB = "CODB" + System.currentTimeMillis();
+                String classe = scegliClasseBaseCasuale();
+                int numCarrozza = pre.getNumCarrozza();
+                int posto = pre.getPosto();
+                Biglietto nuovoBiglietto = new Biglietto(codB, classe, PNR, cfUte, idViaggio, numCarrozza, posto);
+
+                BigliettoDTO bigliettoAcq = BigliettoDTO.newBuilder()
+                        .setCodBiglietto(nuovoBiglietto.getCodBiglietto())
+                        .setPostoAssegnato(nuovoBiglietto.getPosto())
+                        .setViaggioAcquistato(nuovoViaggio)
+                        .setClasse(nuovoBiglietto.getClasse())
+                        .setNumCarrozza(nuovoBiglietto.getNumCarrozza())
+                        .build();
+
+                if (checkLuhn(cartaCredito)) {
+                    bigliettiService.add(nuovoBiglietto);
+                    AcquistaBigliettoResponse response = AcquistaBigliettoResponse.newBuilder()
+                            .setSuccesso(true)
+                            .setMessaggioConferma("Biglietto acquistato correttamente")
+                            .setDettagliBiglietto(bigliettoAcq)
+                            .build();
+
+                    responseObserver.onNext(response);
+                    responseObserver.onCompleted();
+                } else {
+                    prenotazioneService.deleteP(pre);
+                    viaggioService.incrementaPostiDisponibili(pre.getId_viaggio(), 1);
+                    AcquistaBigliettoResponse response = AcquistaBigliettoResponse.newBuilder()
+                            .setSuccesso(false)
+                            .setMessaggioConferma("Carta non valida. Biglietto non acquistato!")
+                            .setDettagliBiglietto(bigliettoAcq)
+                            .build();
+
+                    responseObserver.onNext(response);
+                    responseObserver.onCompleted();
+                }
+            } else {
+                AcquistaBigliettoResponse response = AcquistaBigliettoResponse.newBuilder()
+                        .setSuccesso(false)
+                        .setMessaggioConferma("Prenotazione già scaduta")
+                        .build();
+
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+            }
+        } else {
+            Viaggio viaggioPrenot = viaggioService.findViaggioById(idViaggio);
+            ViaggioDTO nuovoViaggi = ViaggioDTO.newBuilder()
+                    .setIdViaggio(viaggioPrenot.getIDViaggio())
+                    .setOraPartenza(viaggioPrenot.getOraPartenza())
+                    .setOraArrivo(viaggioPrenot.getOraArrivo())
+                    .setStazionePartenza(viaggioPrenot.getStazionePartenza())
+                    .setStazioneArrivo(viaggioPrenot.getStazioneArrivo())
+                    .setPrezzo(viaggioPrenot.getPrezzo())
+                    .setNumeroPostiDisponibili(viaggioPrenot.getNumPostiDisponibili())
+                    .setClassiDisponibili(viaggioPrenot.getClassiDisponibili())
                     .build();
 
-            responseObserver.onNext(resp);
-            responseObserver.onCompleted();
+            String codB = "CODB" + System.currentTimeMillis();
+            String classe = scegliClasseBaseCasuale();
+            int numCarrozza = new Random().nextInt(6) + 1;
+            int posto = new Random().nextInt(6) + 1;
+            Biglietto nuovoBiglietto = new Biglietto(codB, classe, null, cfUte, idViaggio, numCarrozza, posto);
+            viaggioService.decrementaPostiDisponibili(idViaggio, 1);
+
+            BigliettoDTO bigliettoA = BigliettoDTO.newBuilder()
+                    .setCodBiglietto(nuovoBiglietto.getCodBiglietto())
+                    .setPostoAssegnato(nuovoBiglietto.getPosto())
+                    .setViaggioAcquistato(nuovoViaggi)
+                    .setClasse(nuovoBiglietto.getClasse())
+                    .setNumCarrozza(nuovoBiglietto.getNumCarrozza())
+                    .build();
+
+            if (checkLuhn(cartaCredito)) {
+                bigliettiService.add(nuovoBiglietto);
+                AcquistaBigliettoResponse response = AcquistaBigliettoResponse.newBuilder()
+                        .setSuccesso(true)
+                        .setMessaggioConferma("Biglietto acquistato correttamente")
+                        .setDettagliBiglietto(bigliettoA)
+                        .build();
+
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+            } else {
+                AcquistaBigliettoResponse response = AcquistaBigliettoResponse.newBuilder()
+                        .setSuccesso(false)
+                        .setMessaggioConferma("Carta non valida. Biglietto non acquistato!")
+                        .setDettagliBiglietto(bigliettoA)
+                        .build();
+
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+            }
         }
+
 
     }
 
-    @Override
-    public void acquistaBiglietto(AcquistaBigliettoRequest request, StreamObserver<AcquistaBigliettoResponse> responseObserver){
-        UtenteDTO utente = request.getUtenteDati();
-        CercaViaggiResponse viaggiDisponibili = request.getViaggioDesiderato();
+    @Override //COMPLETATO
+    public void promozioniAttive(PromoAttiveRequest request, StreamObserver<PromoAttiveResponse> responseObserver){
+        boolean haiFedelta = request.getHaiFedelta();
+        String tipoTreno = request.getTipoTreno();
+        String dataPartenza = request.getQuandoParti();
 
-        if (viaggiDisponibili.getViaggiCount() == 0) {
-            AcquistaBigliettoResponse response = AcquistaBigliettoResponse.newBuilder()
-                    .setSuccesso(false)
-                    .setMessaggioConferma("Nessun viaggio disponibile per la prenotazione.")
+        List<Promozione> promoAttiveUtente = promozioneService.getPromozioniPerViaggio(tipoTreno, haiFedelta, dataPartenza);
+
+        if(!promoAttiveUtente.isEmpty()){
+            //supponiamo che la migliore delle promozioni sia la prima in lista
+            Promozione migliore = promoAttiveUtente.get(0);
+            PromoAttiveResponse response = PromoAttiveResponse.newBuilder()
+                    .setCodPromoAttiva(migliore.getCodicePromozione())
+                    .setMessage("Promozione valida fino al: " + migliore.getFinePromo())
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } else {
+            PromoAttiveResponse response = PromoAttiveResponse.newBuilder()
+                    .setMessage("Nessuna promozione attiva")
                     .build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-            return;
         }
-
-        /*
-        Visto che mi ritorna una lista di messaggi disponibili, facciamo in modo che
-        lo scelga l'utente ed assegnamo la posizione data dall'utente in input alla
-        chiamata sottostante
-         */
-        ViaggioDTO viaggio = viaggiDisponibili.getViaggi(0);
-
-        // Simula generazione acquisto viaggio
-        BigliettoDTO bigliettoAcq = BigliettoDTO.newBuilder()
-                .setCodBiglietto("")
-                .setPostoAssegnato(10)
-                .setViaggioAcquistato(viaggio)
-                .setNumCarrozza(22)
-                .build();
-
-        //qua ho dubbi ovviamente
-        BigliettiService.add(bigliettoAcq); // non va aggiunta anche al database?
-        //Come gestire l'acquisto?
-
-        AcquistaBigliettoResponse response = AcquistaBigliettoResponse.newBuilder()
-                .setSuccesso(true)
-                .setMessaggioConferma("Biglietto acquistato")
-                .setDettagliBiglietto(bigliettoAcq)
-                .build();
-
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
     }
 
-    @Override
-    public void promozioniAttive(PromoAttiveRequest request, StreamObserver<PromoAttiveResponse> responseObserver){
-
-    }
-
+    @SneakyThrows //COMPLETATO
     @Override
     public void modificaBiglietto(ModificaBigliettoRequest request, StreamObserver<ModificaBigliettoResponse> responseObserver){
+        BigliettoDTO bigliettoDaModificare = request.getBigliettoGiaAcquistato();
+        String data = request.getNuovaData();
+        String nuovaOraPartenza = request.getNuovaOraPartenza();
+        String nuovaClasse = request.getNuovaClasse();
 
+        Biglietto biglietto = bigliettiService.findById(bigliettoDaModificare.getCodBiglietto());
+        Viaggio viaggio = viaggioService.findViaggioById(biglietto.getIdViaggio());
+
+        List<Viaggio> ciSonoViaggiDataeOra = viaggioService.findViaggiNewDataOra(nuovaOraPartenza, data);
+
+        double penale = 5.00;
+        double differenza = 0.0;
+
+        if (!nuovaClasse.equals(biglietto.getClasse())) {
+            differenza = viaggioService.calcolaDifferenzaPrezzoClasse(viaggio, biglietto.getClasse(), nuovaClasse);
+        }
+
+        double totale = viaggio.getPrezzo() + differenza + penale;
+        System.out.printf("Modifica biglietto - Prezzo finale: %.2f\n", totale);
+
+        if(!ciSonoViaggiDataeOra.isEmpty()){
+            Viaggio aggiornatoDataOra = ciSonoViaggiDataeOra.get(0);
+            ViaggioDTO nuovoViaggio = ViaggioDTO.newBuilder()
+                    .setIdViaggio(aggiornatoDataOra.getIDViaggio())
+                    .setOraPartenza(aggiornatoDataOra.getOraPartenza())
+                    .setOraArrivo(aggiornatoDataOra.getOraArrivo())
+                    .setStazionePartenza(aggiornatoDataOra.getStazionePartenza())
+                    .setStazioneArrivo(aggiornatoDataOra.getStazioneArrivo())
+                    .setPrezzo(aggiornatoDataOra.getPrezzo())
+                    .setNumeroPostiDisponibili(aggiornatoDataOra.getNumPostiDisponibili())
+                    .setClassiDisponibili(aggiornatoDataOra.getClassiDisponibili())
+                    .build();
+
+            biglietto.setClasse(nuovaClasse);
+            biglietto.setCodBiglietto(biglietto.getCodBiglietto());
+            bigliettiService.update(biglietto);
+
+            BigliettoDTO aggiornato = BigliettoDTO.newBuilder()
+                    .setCodBiglietto(biglietto.getCodBiglietto())
+                    .setClasse(biglietto.getClasse())
+                    .setPostoAssegnato(biglietto.getPosto())
+                    .setViaggioAcquistato(nuovoViaggio)
+                    .setNumCarrozza(biglietto.getNumCarrozza())
+                    .build();
+
+            ModificaBigliettoResponse response = ModificaBigliettoResponse.newBuilder()
+                    .setSuccesso(true)
+                    .setMessaggioModificaEffettuata("Biglietto modificato correttamente. Totale: " + totale)
+                    .setBigliettoAggiornato(aggiornato)
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } else {
+            ModificaBigliettoResponse response = ModificaBigliettoResponse.newBuilder()
+                    .setSuccesso(false)
+                    .setMessaggioModificaEffettuata("Non è stato trovato un viaggio per quella data e ora indicate")
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
 
     }
 
@@ -313,8 +472,47 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
 
     }
 
-    @Override
+    @Override //COMPLETATO
     public void fedeltaNotificaPromoOfferte(AccettiNotificaFedRequest request, StreamObserver<AccettiNotificaFedResponse> responseObserver){
+        FedeltaDTO fed = request.getLaTuaCarta();
+        boolean attiva = request.getDesideroContatto();
+
+        String cf = fed.getCFpossess();
+        Promozione migliorePromo = promozioneService.promoSoloFedelta(cf).get(0);
+
+        if(attiva == false){
+            AccettiNotificaFedResponse response = AccettiNotificaFedResponse.newBuilder()
+                    .setMessage("Ok, non sei iscritto alle notifiche riguardanti le offerte " +
+                            "del programma fedeltà")
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }else {
+            LocalDateTime oraCorrente = LocalDateTime.now();
+            LocalDateTime oraInizioPromo = LocalDateTime.parse(migliorePromo.getInizioPromo());
+            LocalDateTime oraFinePromo = LocalDateTime.parse(migliorePromo.getFinePromo());
+            if(oraCorrente.isAfter(oraInizioPromo) && oraInizioPromo.isBefore(oraFinePromo)){
+                PromozioneDTO promoDTO = PromozioneDTO.newBuilder()
+                        .setPromoCode(migliorePromo.getCodicePromozione())
+                        .setPercentSconto(migliorePromo.getPercentualeSconto())
+                        .build();
+
+                AccettiNotificaFedResponse response = AccettiNotificaFedResponse.newBuilder()
+                        .setPromoPerTe(promoDTO)
+                        .setMessage("La migliore promozione per te quest'oggi")
+                        .build();
+
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+            } else{
+                AccettiNotificaFedResponse response = AccettiNotificaFedResponse.newBuilder()
+                        .setMessage("Nessuna promozione")
+                        .build();
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+            }
+        }
 
     }
 

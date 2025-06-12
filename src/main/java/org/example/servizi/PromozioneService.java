@@ -37,18 +37,8 @@ public class PromozioneService {
         return promoDataBase.promozioniAttive(null, false, data);
     }
 
+    public List<Promozione> getPromozioniPerViaggio(String tipoTreno, boolean isFed, String data){
+        return promoDataBase.promozioniAttive(tipoTreno, isFed, data);
+    }
 
-    /*
-    Non va implementato in questa classe, però definisco comunque la logica
-    di business.
-    L'idea è la seguente: i regionali non hanno promozioni, solo InterCity e Freccia.
-    Codici sconto:
-    - ROMA20 20%                   annuale
-    - CALABRIASUMMER 30%          da giugno a settembre
-    - MILANO20 25%                 annuale
-    - GIUBILEO2025 50%    riferita a tutto il 2025
-    - TORINO20    20%              annuale
-    -
-
-     */
 }

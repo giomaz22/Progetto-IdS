@@ -34,7 +34,9 @@ public class ViaggioService {
         return trovaConId(id);
     }
 
-    // questo metodo si usa quando si cancella una prenotazione o un biglietto
+    public List<Viaggio> findViaggiNewDataOra(String ora, String data){
+        return viaggioDataBase.cercaViaggiDataOraNew(ora, data);
+    }
     public void incrementaPostiDisponibili(int idViaggio, int postiCancellati) throws SQLException {
         Connection conn = null;
         try {
@@ -60,7 +62,6 @@ public class ViaggioService {
         }
     }
 
-    // questo metodo si usa quando si effettua una prenotazione o un acquisto biglietto
     public void decrementaPostiDisponibili( int idViaggio, int postiAcquistati) throws SQLException {
         Connection conn = null;
         try {
@@ -87,4 +88,14 @@ public class ViaggioService {
 
     }
 
+    public double calcolaDifferenzaPrezzoClasse(Viaggio viaggio, String classeAttuale, String nuovaClasse) {
+        double prezzoBase = viaggio.getPrezzo();
+        if (classeAttuale.equals(nuovaClasse)) return 0.0;
+        if (classeAttuale.equals("SECONDA") && nuovaClasse.equals("PRIMA")) {
+            return prezzoBase * 0.3;
+        } else if (classeAttuale.equals("PRIMA") && nuovaClasse.equals("SECONDA")) {
+            return -prezzoBase * 0.3;
+        }
+        return 0.0;
+    }
 }

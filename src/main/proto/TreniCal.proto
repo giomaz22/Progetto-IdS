@@ -33,7 +33,8 @@ message BigliettoDTO {
   string codBiglietto = 1;
   int32 numCarrozza = 2;
   int32 postoAssegnato = 3;
-  ViaggioDTO viaggioAcquistato = 4;
+  string classe = 4;
+  ViaggioDTO viaggioAcquistato = 5;
 }
 
 message ViaggioDTO {
@@ -67,10 +68,7 @@ message FedeltaDTO {
 message PromozioneDTO {
   string promoCode = 1;
   int32 percentSconto = 2;
-  bool siOnoFedelta = 3;
-  string tipoTreno = 4;
-  string inizioPromo = 5;
-  string finePromo = 6;
+
 }
 
 message PrenotazioneDTO {
@@ -115,7 +113,6 @@ message PromoAttiveRequest {
   bool haiFedelta = 1; // devo vedere se si tratta di promo per Fedeltà o meno
   string tipoTreno = 2;
   string quandoParti = 3;  // verifico se nella data di partenza c'è una promo attiva o meno
-  string quandoTorni = 4;
 
 }
 
@@ -127,6 +124,7 @@ message AcquistaBigliettoRequest {
   int32 viaggioID = 1;
   string cfUtente = 2;
   string numCarta = 3;
+  string PNR = 4;
 }
 
 message PrenotaRequest {
@@ -158,8 +156,8 @@ message LoginResponse {
 }
 
 message PromoAttiveResponse {
-  string codPromoAttiva = 1; // restituisci i codici delle promo attive (all'utente servirà solo applicare il codice)
-  string message = 2; // (restituisco un messaggio "Promo cod. CALABRIA2" attiva con sconto pari a + "scontoPercent")
+  string codPromoAttiva = 1;
+  string message = 2;
 }
 
 message RegistraResponse {
@@ -197,7 +195,7 @@ message IscrivimiTrenoSpeResponse {
 
 message AccettiNotificaFedResponse {
   PromozioneDTO promoPerTe = 1;
-  string offertaSpeciale = 2;
+  string message = 2;
 }
 
 message IscriviUtenteResponse {

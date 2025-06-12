@@ -117,4 +117,38 @@ public class ViaggioDAO {
         }
     }
 
+    public List<Viaggio> cercaViaggiDataOraNew(String ora, String data) {
+        List<Viaggio> risultati = new ArrayList<>();
+        String sql = "SELECT * FROM viaggi v " +
+                "WHERE v.oraPartenza = ?  AND v.data = ?";
+
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, ora);
+            stmt.setDate(2, Date.valueOf(data));
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Viaggio viaggio = new Viaggio();
+                viaggio.setIDViaggio(rs.getInt("id"));
+                viaggio.setIDtreno(rs.getString("idTreno"));
+                viaggio.setNumPostiDisponibili(rs.getInt("numPostiDisponibili"));
+                viaggio.setOraPartenza(rs.getString("oraPartenza"));
+                viaggio.setOraArrivo(rs.getString("oraArrivo"));
+                viaggio.setData(rs.getString("data"));
+                viaggio.setStazionePartenza(rs.getString("stazionePartenza"));
+                viaggio.setStazioneArrivo(rs.getString("stazioneArrivo"));
+                viaggio.setPrezzo(rs.getDouble("prezzo"));
+                viaggio.setClassiDisponibili(rs.getString("classiDisponibili"));
+
+                risultati.add(viaggio);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return risultati;
+    }
+
+
 }
