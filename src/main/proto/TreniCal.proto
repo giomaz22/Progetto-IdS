@@ -14,7 +14,6 @@ service TrenicalService {
   rpc PromozioniAttive(PromoAttiveRequest) returns (PromoAttiveResponse);
   rpc ModificaBiglietto(ModificaBigliettoRequest) returns (ModificaBigliettoResponse);
   rpc AndamentoTrenoSpecifico(IscrivimiTrenoSpeRequest) returns (IscrivimiTrenoSpeResponse);
-  rpc NotificheAutomatiche(IscriviUtenteRequest) returns (IscriviUtenteResponse);
   /*
   Il client chiama NotificheAutomatiche(cf) → il server tiene aperto lo stream. Server Streaming
 
@@ -83,17 +82,13 @@ message PrenotazioneDTO {
 
 // MESSAGGI DI RICHIESTA
 
-message IscriviUtenteRequest {
-  string codiceFiscale = 1;
-}
-
 message AccettiNotificaFedRequest {
   FedeltaDTO laTuaCarta = 1;
   bool desideroContatto = 2;
 }
 
 message IscrivimiTrenoSpeRequest {
-  bool registrami = 1;
+  string cfUt = 1;
   string idTreno = 2;
 }
 
@@ -190,7 +185,9 @@ message ModificaBigliettoResponse {
 }
 
 message IscrivimiTrenoSpeResponse {
-  string informazioni = 1;
+  string idTreno = 1;
+  string statoTreno = 2;
+  string messaggio = 3;
 }
 
 message AccettiNotificaFedResponse {
@@ -198,9 +195,3 @@ message AccettiNotificaFedResponse {
   string message = 2;
 }
 
-message IscriviUtenteResponse {
-  string idViaggio = 1;
-  string tipoEvento = 2;     // es: "CANCELLATO", "CAMBIO_ORARIO", "CAMBIO_BINARIO"
-  string messaggio = 3;
-  string orarioAggiornato = 4;
-}

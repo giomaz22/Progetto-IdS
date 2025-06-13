@@ -1,8 +1,10 @@
 package org.example.persistence.dao;
 
+import org.example.model.Biglietto;
 import org.example.model.Treno;
 import org.example.persistence.DBConnectionSingleton;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +23,15 @@ public class TrenoDAO {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void aggiornaStatoTreno(String idTreno, String stato, Connection conn) throws SQLException {
+        String sql = "UPDATE treni SET statoTreno = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, stato);
+            stmt.setString(2, idTreno);
+            stmt.executeUpdate();
         }
     }
 

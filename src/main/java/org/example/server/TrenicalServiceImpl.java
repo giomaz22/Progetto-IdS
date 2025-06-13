@@ -11,7 +11,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.example.util.ClassiTrenoUtil.scegliClasseBaseCasuale;
 import static org.example.util.CodiceCartaFedelta.generaCodice;
@@ -249,7 +252,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
         String cartaCredito = request.getNumCarta();
         String PNR = request.getPNR();
 
-        //gestisco prima la parte relativa alle promozioni che determinano il prezzo del biglietto?
+        double prezzoFinale = 0;
 
         //acquisto un biglietto già prenotato
         if (PNR != null) {
@@ -258,13 +261,18 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
             LocalDateTime oraScadenzaPrenotazione = LocalDateTime.parse(pre.getDataScadenza());
             if (oraCorrente.isBefore(oraScadenzaPrenotazione)) {
                 Viaggio viaggioPrenotato = viaggioService.findViaggioById(pre.getId_viaggio());
+                if(calcoloPrezzoEventualePromo(cfUte, viaggioPrenotato) < viaggioPrenotato.getPrezzo()){
+                    prezzoFinale = calcoloPrezzoEventualePromo(cfUte, viaggioPrenotato);
+                } else {
+                    prezzoFinale = viaggioPrenotato.getPrezzo();
+                }
                 ViaggioDTO nuovoViaggio = ViaggioDTO.newBuilder()
                         .setIdViaggio(viaggioPrenotato.getIDViaggio())
                         .setOraPartenza(viaggioPrenotato.getOraPartenza())
                         .setOraArrivo(viaggioPrenotato.getOraArrivo())
                         .setStazionePartenza(viaggioPrenotato.getStazionePartenza())
                         .setStazioneArrivo(viaggioPrenotato.getStazioneArrivo())
-                        .setPrezzo(viaggioPrenotato.getPrezzo())
+                        .setPrezzo(prezzoFinale)
                         .setNumeroPostiDisponibili(viaggioPrenotato.getNumPostiDisponibili())
                         .setClassiDisponibili(viaggioPrenotato.getClassiDisponibili())
                         .build();
@@ -285,6 +293,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
 
                 if (checkLuhn(cartaCredito)) {
                     bigliettiService.add(nuovoBiglietto);
+                    System.out.println("Pagamento di " + cfUte + "accettato con carta" + cartaCredito);
                     AcquistaBigliettoResponse response = AcquistaBigliettoResponse.newBuilder()
                             .setSuccesso(true)
                             .setMessaggioConferma("Biglietto acquistato correttamente")
@@ -316,13 +325,18 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
             }
         } else {
             Viaggio viaggioPrenot = viaggioService.findViaggioById(idViaggio);
+            if(calcoloPrezzoEventualePromo(cfUte, viaggioPrenot) < viaggioPrenot.getPrezzo()){
+                prezzoFinale = calcoloPrezzoEventualePromo(cfUte, viaggioPrenot);
+            } else {
+                prezzoFinale = viaggioPrenot.getPrezzo();
+            }
             ViaggioDTO nuovoViaggi = ViaggioDTO.newBuilder()
                     .setIdViaggio(viaggioPrenot.getIDViaggio())
                     .setOraPartenza(viaggioPrenot.getOraPartenza())
                     .setOraArrivo(viaggioPrenot.getOraArrivo())
                     .setStazionePartenza(viaggioPrenot.getStazionePartenza())
                     .setStazioneArrivo(viaggioPrenot.getStazioneArrivo())
-                    .setPrezzo(viaggioPrenot.getPrezzo())
+                    .setPrezzo(prezzoFinale)
                     .setNumeroPostiDisponibili(viaggioPrenot.getNumPostiDisponibili())
                     .setClassiDisponibili(viaggioPrenot.getClassiDisponibili())
                     .build();
@@ -365,6 +379,23 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
         }
 
 
+    }
+
+    public double calcoloPrezzoEventualePromo(String cfUte, Viaggio v) {
+        boolean isFedelta = fedeltaService.findFedeltaByCF(cfUte) != null;
+        Treno t = trenoService.getTrainByID(v.getIDtreno());
+        List<Promozione> promoAttive = promozioneService.getPromozioniPerViaggio(
+                t.getTipologia(), isFedelta, v.getData());
+
+        double sconto = promoAttive.stream()
+                .mapToDouble(Promozione::getPercentualeSconto)
+                .max()
+                .orElse(0.0);
+
+        double prezzoBase = v.getPrezzo();
+        double prezzoFinale = prezzoBase * (1 - sconto / 100.0);
+
+        return prezzoFinale;
     }
 
     @Override //COMPLETATO
@@ -462,14 +493,48 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
 
     }
 
-    @Override
+    private final Map<String, List<StreamObserver<IscrivimiTrenoSpeResponse>>> iscritti = new ConcurrentHashMap<>();
+    @Override //COMPLETATO
     public void andamentoTrenoSpecifico(IscrivimiTrenoSpeRequest request, StreamObserver<IscrivimiTrenoSpeResponse> responseObserver){
+        String idtreno = request.getIdTreno();
+
+        iscritti.computeIfAbsent(idtreno, k -> new CopyOnWriteArrayList<>()).add(responseObserver);
+        Treno treno = trenoService.getTrainByID(idtreno);
+
+        if(treno.getStatoTreno().equals("ARRIVATO") || treno.getStatoTreno().equals("TERMINATO")){
+            responseObserver.onCompleted();
+        } // la connessione va chiusa quando il viaggio è terminato
 
     }
 
-    @Override
-    public void notificheAutomatiche(IscriviUtenteRequest request, StreamObserver<IscriviUtenteResponse> responseObserver){
+    public void notificaCambiamentoTreno(String idTreno, String statoTreno, String message) {
+        List<StreamObserver<IscrivimiTrenoSpeResponse>> observers = iscritti.get(idTreno);
+        if (observers == null) return;
 
+        IscrivimiTrenoSpeResponse notification = IscrivimiTrenoSpeResponse.newBuilder()
+                .setIdTreno(idTreno)
+                .setStatoTreno(statoTreno)
+                .setMessaggio(message)
+                .build();
+
+        // Invia la notifica a tutti gli iscritti
+        for (StreamObserver<IscrivimiTrenoSpeResponse> observer : observers) {
+            try {
+                observer.onNext(notification);
+
+                if (statoTreno.equals("ARRIVATO") || statoTreno.equals("TERMINATO")) {
+                    observer.onCompleted(); // Chiudi connessione
+                }
+
+            } catch (Exception e) {
+                observer.onError(e); // Eventualmente rimuovi l'utente
+            }
+        }
+
+        // Rimuovi sottoscrittori se il viaggio è terminato
+        if (statoTreno.equals("ARRIVATO") || statoTreno.equals("TERMINATO")) {
+            iscritti.remove(idTreno);
+        }
     }
 
     @Override //COMPLETATO
@@ -515,5 +580,6 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
         }
 
     }
+
 
 }

@@ -3,6 +3,7 @@ package org.example.servizi;
 import lombok.SneakyThrows;
 import org.example.model.Viaggio;
 import org.example.persistence.DBConnectionSingleton;
+import org.example.persistence.dao.TrenoDAO;
 import org.example.persistence.dao.ViaggioDAO;
 
 import java.sql.Connection;
@@ -11,9 +12,11 @@ import java.util.List;
 
 public class ViaggioService {
     private final ViaggioDAO viaggioDataBase;
+    private final TrenoDAO trenoDataBase;
 
     public ViaggioService(){
         this.viaggioDataBase = new ViaggioDAO();
+        this.trenoDataBase = new TrenoDAO();
     }
 
     public void addNewViaggio(Viaggio v){
@@ -37,6 +40,7 @@ public class ViaggioService {
     public List<Viaggio> findViaggiNewDataOra(String ora, String data){
         return viaggioDataBase.cercaViaggiDataOraNew(ora, data);
     }
+
     public void incrementaPostiDisponibili(int idViaggio, int postiCancellati) throws SQLException {
         Connection conn = null;
         try {
@@ -98,4 +102,9 @@ public class ViaggioService {
         }
         return 0.0;
     }
+
+    public void aggiornaDettaglioViaggio(Viaggio v){
+
+    }
 }
+
