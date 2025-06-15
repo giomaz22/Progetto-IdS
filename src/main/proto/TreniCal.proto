@@ -188,6 +188,8 @@ message IscrivimiTrenoSpeResponse {
   string idTreno = 1;
   string statoTreno = 2;
   string messaggio = 3;
+  string oraArrivo = 4;
+  string oraPartenza = 5;
 }
 
 message AccettiNotificaFedResponse {

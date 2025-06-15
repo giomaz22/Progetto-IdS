@@ -507,36 +507,6 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
 
     }
 
-    public void notificaCambiamentoTreno(String idTreno, String statoTreno, String message) {
-        List<StreamObserver<IscrivimiTrenoSpeResponse>> observers = iscritti.get(idTreno);
-        if (observers == null) return;
-
-        IscrivimiTrenoSpeResponse notification = IscrivimiTrenoSpeResponse.newBuilder()
-                .setIdTreno(idTreno)
-                .setStatoTreno(statoTreno)
-                .setMessaggio(message)
-                .build();
-
-        // Invia la notifica a tutti gli iscritti
-        for (StreamObserver<IscrivimiTrenoSpeResponse> observer : observers) {
-            try {
-                observer.onNext(notification);
-
-                if (statoTreno.equals("ARRIVATO") || statoTreno.equals("TERMINATO")) {
-                    observer.onCompleted(); // Chiudi connessione
-                }
-
-            } catch (Exception e) {
-                observer.onError(e); // Eventualmente rimuovi l'utente
-            }
-        }
-
-        // Rimuovi sottoscrittori se il viaggio è terminato
-        if (statoTreno.equals("ARRIVATO") || statoTreno.equals("TERMINATO")) {
-            iscritti.remove(idTreno);
-        }
-    }
-
     @Override //COMPLETATO
     public void fedeltaNotificaPromoOfferte(AccettiNotificaFedRequest request, StreamObserver<AccettiNotificaFedResponse> responseObserver){
         FedeltaDTO fed = request.getLaTuaCarta();
@@ -581,5 +551,33 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
 
     }
 
+    public void notificaCambiamentoTreno(String idTreno, String statoTreno, String oraArrivo, String oraPartenza, String message) {
+        List<StreamObserver<IscrivimiTrenoSpeResponse>> osservatori = iscritti.get(idTreno);
+        if (osservatori != null) {
+            IscrivimiTrenoSpeResponse notifica = IscrivimiTrenoSpeResponse.newBuilder()
+                    .setIdTreno(idTreno)
+                    .setStatoTreno(statoTreno)
+                    .setOraPartenza(oraPartenza)
+                    .setOraArrivo(oraArrivo)
+                    .setMessaggio(message)
+                    .build();
+
+            for (StreamObserver<IscrivimiTrenoSpeResponse> obs : osservatori) {
+                try {
+                    obs.onNext(notifica);
+                    if (isFinale(statoTreno)) obs.onCompleted();
+                } catch (Exception e) {
+                    obs.onError(e);
+                }
+            }
+            if (isFinale(statoTreno)) iscritti.remove(idTreno);
+        }
+    }
+
+    private boolean isFinale(String stato) {
+        return stato.equalsIgnoreCase("ARRIVATO") ||
+                stato.equalsIgnoreCase("TERMINATO") ||
+                stato.equalsIgnoreCase("CANCELLATO");
+    }
 
 }

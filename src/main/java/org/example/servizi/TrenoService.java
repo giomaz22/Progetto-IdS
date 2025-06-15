@@ -52,7 +52,7 @@ public class TrenoService {
                 conn.close();
             }
         }
-        trenicalService.notificaCambiamentoTreno(idTreno, newStato, message);
+        trenicalService.notificaCambiamentoTreno(idTreno, newStato, null, null, message);
     }
 
 }

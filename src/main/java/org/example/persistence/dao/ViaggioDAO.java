@@ -150,6 +150,15 @@ public class ViaggioDAO {
         return risultati;
     }
 
+    public void aggiornaStatoViaggio(String idTreno, String oraPartenza, String oraArrivo, Connection conn) throws SQLException {
+        String sql = "UPDATE viaggi SET oraPartenza = ?, oraArrivo = ? WHERE idTreno = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, oraPartenza);
+            stmt.setString(2, oraArrivo);
+            stmt.executeUpdate();
+        }
 
+
+    }
 
 }
