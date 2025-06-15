@@ -580,4 +580,22 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
                 stato.equalsIgnoreCase("CANCELLATO");
     }
 
+    @Override
+    public void statusAttualeViaggioTren(StatusViaggioTRequest request, StreamObserver<StatusViaggioTResponse> responseObserver){
+        int idViaggio = request.getIdViaggio();
+        Viaggio v = viaggioService.findViaggioById(idViaggio);
+
+        if(v != null){
+            String status = viaggioService.dettagliAttualiViaggio(idViaggio);
+            StatusViaggioTResponse response = StatusViaggioTResponse.newBuilder()
+                    .setIdTreno(v.getIDtreno())
+                    .setMessage(status)
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } else {
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Viaggio non trovato e/o ID errato").asRuntimeException());
+        }
+    }
 }

@@ -14,16 +14,8 @@ service TrenicalService {
   rpc PromozioniAttive(PromoAttiveRequest) returns (PromoAttiveResponse);
   rpc ModificaBiglietto(ModificaBigliettoRequest) returns (ModificaBigliettoResponse);
   rpc AndamentoTrenoSpecifico(IscrivimiTrenoSpeRequest) returns (IscrivimiTrenoSpeResponse);
-  /*
-  Il client chiama NotificheAutomatiche(cf) → il server tiene aperto lo stream. Server Streaming
-
-Quando nel backend si verifica un evento (cancellazione, cambio orario...), il server:
-- verifica gli utenti con biglietto/prenotazione su quel viaggio
-- invia una NotificaCambiamentoViaggio a ciascun client connesso (tramite lo stream)
-
-Soluzione asincrona e scalabile
-   */
   rpc FedeltaNotificaPromoOfferte(AccettiNotificaFedRequest) returns(AccettiNotificaFedResponse);
+  rpc StatusAttualeViaggioTren(StatusViaggioTRequest) returns (StatusViaggioTResponse);
 }
 
 // DTO
@@ -82,14 +74,17 @@ message PrenotazioneDTO {
 
 // MESSAGGI DI RICHIESTA
 
+message StatusViaggioTRequest{
+  int32 idViaggio = 1;
+}
+
 message AccettiNotificaFedRequest {
   FedeltaDTO laTuaCarta = 1;
   bool desideroContatto = 2;
 }
 
 message IscrivimiTrenoSpeRequest {
-  string cfUt = 1;
-  string idTreno = 2;
+  string idTreno = 1;
 }
 
 message CercaViaggiRequest {
@@ -194,6 +189,11 @@ message IscrivimiTrenoSpeResponse {
 
 message AccettiNotificaFedResponse {
   PromozioneDTO promoPerTe = 1;
+  string message = 2;
+}
+
+message StatusViaggioTResponse {
+  string idTreno = 1;
   string message = 2;
 }
 

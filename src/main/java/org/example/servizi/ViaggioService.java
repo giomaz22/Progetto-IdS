@@ -139,7 +139,8 @@ public class ViaggioService {
         trenicalService.notificaCambiamentoTreno(idTreno, newStato, oraPartenza, oraArrivo, message);
     }
 
-    public String dettagliAttualiViaggio(Viaggio v) {
+    public String dettagliAttualiViaggio(int idViaggio) {
+        Viaggio v = findViaggioById(idViaggio);
         if (v == null) {
             return "Viaggio non trovato.";
         }
