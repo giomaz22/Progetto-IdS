@@ -114,7 +114,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
             responseObserver.onCompleted();
 
         }else{
-            responseObserver.onError(Status.NOT_FOUND.withDescription("Credenziali errate").asRuntimeException());
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Utente non trovato e/o credenziali errate.").asRuntimeException());
         }
 
     }

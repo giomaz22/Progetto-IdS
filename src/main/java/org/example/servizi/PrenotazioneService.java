@@ -12,12 +12,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class PrenotazioneService {
-    /*
-    public void addPrenotazione(Prenotazione p, Connection conn) throws SQLException
-    public Prenotazione trovaPerPNR(String pnr)
-    public void eliminaPrenotazione(Prenotazione p, Connection conn) throws SQLException
-    public List<Prenotazione> tutteLePrenotazioni()
-     */
+
     private final PrenotazioneDAO prenotDataBase; //classe di gestione DB per i biglietti
     private final ViaggioDAO viaggioDataBase;
 
