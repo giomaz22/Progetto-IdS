@@ -1,6 +1,5 @@
 package org.example.persistence.dao;
 
-import org.example.model.Biglietto;
 import org.example.model.Treno;
 import org.example.persistence.DBConnectionSingleton;
 
@@ -12,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TrenoDAO {
+
+    // Metodo che aggiunge un nuovo treno al DB
     public void addTreno(Treno treno) {
         String sql = "INSERT INTO treni (id, tipoTreno, statoTreno, numCarrozze) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
@@ -26,6 +27,7 @@ public class TrenoDAO {
         }
     }
 
+    // Metodo che, dato l'id di un treno, ne aggiorna lo stato
     public void aggiornaStatoTreno(String idTreno, String stato, Connection conn) throws SQLException {
         String sql = "UPDATE treni SET statoTreno = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -35,6 +37,7 @@ public class TrenoDAO {
         }
     }
 
+    // Metodo che trova un treno dato un id specifico
     public Treno trovaTrenoPerID(String id) {
         String sql = "SELECT * FROM treni WHERE id = ?";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
@@ -59,12 +62,13 @@ public class TrenoDAO {
         return null;
     }
 
+    // Metodo che ritorna tutti i treni interni al DB
     public List<Treno> tuttiItreni(){
         List<Treno> risultato = new ArrayList<>();
         String sql = "SELECT * FROM treni";
 
         try(PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)){
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 String ID_1 = rs.getString("id");
                 String tipoT_1 = rs.getString("tipoTreno");
@@ -86,4 +90,16 @@ public class TrenoDAO {
         }
         return risultato;
     }
+
+    // Metodo che elimina un treno dato un id specifico
+    public void eliminaTreno(String idTreno) {
+        String sql = "DELETE FROM treni WHERE id = ?";
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, idTreno);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

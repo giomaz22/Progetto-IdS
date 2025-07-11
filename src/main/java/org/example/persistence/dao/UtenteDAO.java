@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UtenteDAO {
+
+    // Metodo che serve ad aggiungere un nuovo cliente/admin nel DB
     public void addCliente(Utente utente) {
         String sql = "INSERT INTO utenti (cf, nome, cognome, dataNascita, email, password, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
@@ -24,6 +26,7 @@ public class UtenteDAO {
         }
     }
 
+    // Metodo che trova uno specifico utente dato il codice fiscale
     public Utente trovaPerCF(String cf) {
         String sql = "SELECT * FROM utenti WHERE cf = ?";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
@@ -53,6 +56,7 @@ public class UtenteDAO {
         return null;
     }
 
+    // Metodo che trova uno specifico utente data l'email
     public Utente trovaPerEmail(String email) {
         String sql = "SELECT * FROM utenti WHERE email = ?";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {

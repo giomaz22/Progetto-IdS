@@ -14,4 +14,11 @@ public class Treno {
     private String IDtreno, tipologia, statoTreno;
     private int numCarrozze;
     private List<Biglietto> bigliettiVendutiPerTreno = new ArrayList<>();
+
+    public Treno(String IDtreno, String tipologia, String statoTreno, int numCarrozze) {
+        this.IDtreno = IDtreno;
+        this.tipologia = tipologia;
+        this.statoTreno = statoTreno;
+        this.numCarrozze = numCarrozze;
+    }
 }

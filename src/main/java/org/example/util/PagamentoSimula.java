@@ -1,8 +1,11 @@
 package org.example.util;
 
-import java.util.Scanner;
-
 public class PagamentoSimula {
+    /*
+    In questa classe è implementato un metodo che serve per verificare se
+    il numero di una carta di credito usata per l'acquisto di un biglietto
+    è valida o meno. (Algoritmo di Luhn)
+     */
     public static boolean checkLuhn(String numCarta) {
         if (numCarta == null || numCarta.length() != 16 || !numCarta.matches("\\d+")) return false;
 

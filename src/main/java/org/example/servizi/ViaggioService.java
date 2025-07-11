@@ -28,6 +28,8 @@ public class ViaggioService {
         viaggioDataBase.addNewViaggio(v);
     }
 
+    public void removeViaggio(int idViaggio){viaggioDataBase.eliminaViaggio(idViaggio);}
+
     public List<Viaggio> ricercaViaggi(String S_partenza, String S_arrivo, String data, String tipoTreno){
         return viaggioDataBase.cercaViaggi(S_partenza, S_arrivo, data, tipoTreno);
     }

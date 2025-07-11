@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViaggioDAO {
+
+    // Metodo che permette l'aggiunta di un viaggio al DB
     public void addNewViaggio(Viaggio v) {
         String sql = "INSERT INTO viaggi (id, idTreno, numPostiDisponibili, oraPartenza, oraArrivo, data, stazionePartenza, stazioneArrivo, prezzo, classiDisponibili) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
@@ -28,6 +30,7 @@ public class ViaggioDAO {
         }
     }
 
+    // Metodo che restituisce una lista di viaggi in base alle preferenze di partenza, arrivo, data e tipo treno
     public List<Viaggio> cercaViaggi(String partenza, String arrivo,
                                      String data, String tipoTreno) {
         List<Viaggio> risultati = new ArrayList<>();
@@ -42,7 +45,7 @@ public class ViaggioDAO {
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, partenza);
             stmt.setString(2, arrivo);
-            stmt.setDate(3, Date.valueOf(data));
+            stmt.setString(3, data);
             if (tipoTreno != null && !tipoTreno.isEmpty()) {
                 stmt.setString(4, tipoTreno);
             }
@@ -71,6 +74,7 @@ public class ViaggioDAO {
         return risultati;
     }
 
+    // Metodo che restituisce un viaggio specifico dato l'id
     public Viaggio trovaViaggioPerID(int id, Connection conn) {
         String sql = "SELECT * FROM viaggi WHERE id = ?";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
@@ -108,6 +112,7 @@ public class ViaggioDAO {
         return null;
     }
 
+    // Metodo che aggiorna i posti disponibili di un viaggio specifico
     public void aggiornaDisponibilitaPosti(int idViaggio, int nuoviPosti, Connection conn) throws SQLException {
         String sql = "UPDATE viaggi SET numPostiDisponibili = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -117,6 +122,7 @@ public class ViaggioDAO {
         }
     }
 
+    // Metodo che restituisce una lista di viaggi, se presenti, in base a data e ora di partenza specificati
     public List<Viaggio> cercaViaggiDataOraNew(String ora, String data) {
         List<Viaggio> risultati = new ArrayList<>();
         String sql = "SELECT * FROM viaggi v " +
@@ -124,7 +130,7 @@ public class ViaggioDAO {
 
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, ora);
-            stmt.setDate(2, Date.valueOf(data));
+            stmt.setString(2, data);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -150,15 +156,28 @@ public class ViaggioDAO {
         return risultati;
     }
 
+    // Metodo che aggiorna lo stato del viaggio, dato idTreno e nuova ora di partenza e di arrivo
     public void aggiornaStatoViaggio(String idTreno, String oraPartenza, String oraArrivo, Connection conn) throws SQLException {
         String sql = "UPDATE viaggi SET oraPartenza = ?, oraArrivo = ? WHERE idTreno = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, oraPartenza);
             stmt.setString(2, oraArrivo);
+            stmt.setString(3, idTreno);
             stmt.executeUpdate();
         }
 
 
+    }
+
+    // Metodo che elimina un viaggio specifico
+    public void eliminaViaggio(int idViaggio) {
+        String sql = "DELETE FROM viaggi WHERE id = ?";
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, idViaggio);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

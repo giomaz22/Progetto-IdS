@@ -3,6 +3,8 @@ package org.example.client;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import javafx.application.Platform;
+import org.example.controller.StatoTrenoController;
 import org.example.grpc.*;
 
 public class TrenicalClient {
@@ -83,13 +85,13 @@ public class TrenicalClient {
         return blockingStub.sottoscriviFedelta(request);
     }
 
-    // effettua prenotazione viaggio OK
     public PrenotaResponse prenotaViaggioUtente(int idViaggio, String cfUtente) {
         try {
             PrenotaRequest request = PrenotaRequest.newBuilder()
                     .setViaggioID(idViaggio)
                     .setCfUtente(cfUtente)
                     .build();
+
             PrenotaResponse response = blockingStub.prenotaViaggio(request);
 
             if (!response.getSuccesso()) {
@@ -97,27 +99,29 @@ public class TrenicalClient {
                 return response;
             }
 
+
             StatusViaggioTRequest statoRequest = StatusViaggioTRequest.newBuilder()
                     .setIdViaggio(idViaggio)
                     .build();
 
             StatusViaggioTResponse statoResponse = blockingStub.statusAttualeViaggioTren(statoRequest);
-            System.out.println(statoResponse.getMessage());
-
             String idTreno = statoResponse.getIdTreno();
-            notifier.andamentoTreno(idTreno, cfUtente);
+            String statoIniziale = statoResponse.getMessage();
+
+
+            Platform.runLater(() -> StatoTrenoController.mostraConMonitoraggio(idTreno, statoIniziale));
 
             return response;
 
         } catch (Exception e) {
-        System.err.println(e.getMessage());
-        return PrenotaResponse.newBuilder()
-                .setSuccesso(false)
-                .setMessaggio("Errore interno durante la prenotazione")
-                .build();
+            System.err.println("Errore: " + e.getMessage());
+            return PrenotaResponse.newBuilder()
+                    .setSuccesso(false)
+                    .setMessaggio("Errore interno durante la prenotazione")
+                    .build();
         }
-
     }
+
 
     // acquista biglietto OK
     public AcquistaBigliettoResponse acquistaBigliettoUtente(int idViaggio, String cfUtente, String numCarta, String PNR) {
@@ -140,10 +144,11 @@ public class TrenicalClient {
                     .build();
 
             StatusViaggioTResponse statoResponse = blockingStub.statusAttualeViaggioTren(statoRequest);
-            System.out.println(statoResponse.getMessage());
-
             String idTreno = statoResponse.getIdTreno();
-            notifier.andamentoTreno(idTreno, cfUtente);
+            String statoIniziale = statoResponse.getMessage();
+
+
+            Platform.runLater(() -> StatoTrenoController.mostraConMonitoraggio(idTreno, statoIniziale));
 
             return response;
 
@@ -189,6 +194,18 @@ public class TrenicalClient {
                 .build();
 
         return blockingStub.fedeltaNotificaPromoOfferte(request);
+    }
+
+    public StatusViaggioTResponse statusAttualeViaggio(int idViaggio) {
+        StatusViaggioTRequest req = StatusViaggioTRequest.newBuilder()
+                .setIdViaggio(idViaggio)
+                .build();
+
+        return blockingStub.statusAttualeViaggioTren(req);
+    }
+
+    public TrenoNotifier getNotifier() {
+        return this.notifier;
     }
 
 }

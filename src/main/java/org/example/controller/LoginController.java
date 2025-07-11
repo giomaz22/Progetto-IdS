@@ -34,12 +34,32 @@ public class LoginController {
 
         try {
             var response = client.loginUtente(email, password);
-            showAlert(Alert.AlertType.INFORMATION, "Login riuscito", "Benvenuto " + response.getLoginUt().getNome());
-            // Passa alla schermata principale
+            boolean isAdmin = response.getLoginUt().getAdmin();
+
+            if (isAdmin) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/adminDashboard.fxml"));
+                Parent root = loader.load();
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Dashboard Amministratore");
+                stage.show();
+            } else {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dashboard.fxml"));
+                Parent root = loader.load();
+                DashboardController controller = loader.getController();
+                controller.setUtenteCf(response.getLoginUt().getCodiceFiscale());
+
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Dashboard Utente");
+                stage.show();
+            }
+
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Errore login", "[ERRORE]" + e.getMessage());
+            infoLabel.setText("Login fallito: " + e.getMessage());
         }
     }
+
 
     @FXML
     private void handleRegistrazione() {

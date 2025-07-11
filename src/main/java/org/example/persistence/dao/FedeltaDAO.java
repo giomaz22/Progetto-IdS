@@ -8,8 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class FedeltaDAO {
+
+    // Metodo che aggiunge una nuova carta fedeltà dato un codice fiscale
     public void addCFedeltaPerCliente(Fedelta f) {
-        String sql = "INSERT INTO fedelta (id, cf, punti) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO fedelta (id, cf, puntiFedelta) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
             stmt.setString(1, f.getID());
             stmt.setString(2, f.getCFpossessore());
@@ -21,6 +23,7 @@ public class FedeltaDAO {
         }
     }
 
+    // Metodo che dato un codice fiscale restituisce la carta associata
     public Fedelta trovaCartaPerCFUtente(String cf) {
         String sql = "SELECT * FROM fedelta WHERE cf = ?";
         try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
@@ -42,22 +45,5 @@ public class FedeltaDAO {
         }
         return null;
     }
-
-    public void aggiornaPunti(Fedelta f) {
-        String sql = "UPDATE fedelta SET punti = ?, WHERE id = ?";
-
-        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, f.getPuntiCarta());
-            stmt.setString(2, f.getID());
-
-            stmt.executeUpdate();
-            System.out.println("Punti aggiornati per " + f.getID());
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 
 }

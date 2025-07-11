@@ -22,19 +22,11 @@ public class PromozioneService {
         promoDataBase.addPromozione(promo, conn);
     }
 
+    public void removePromotion(String codice) {promoDataBase.eliminaPromozione(codice);}
+
     public List<Promozione> promoSoloFedelta(String CF){
         boolean check = serviceFedelta.isFedeltaUtente(CF);
         return promoDataBase.promozioniAttive( null, check, null);
-    }
-
-    // si intende valida per tutti
-    public List<Promozione> promoSuTrenoSpecifico(String idtreno){
-        return promoDataBase.promozioniAttive(idtreno, false, null);
-    }
-
-    // si intende valida per tutti
-    public List<Promozione> promoDataSpecifica(String data){
-        return promoDataBase.promozioniAttive(null, false, data);
     }
 
     public List<Promozione> getPromozioniPerViaggio(String tipoTreno, boolean isFed, String data){

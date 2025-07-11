@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PromozioneDAO {
+
+    // Metodo che aggiunge una nuova promozione al DB
     public void addPromozione(Promozione p, Connection conn) throws SQLException {
         String sql = "INSERT INTO promozioni (CodicePromozione, PercentualeSconto, soloFedelta, tipoTreno, inizioPromo, finePromo) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -24,6 +26,7 @@ public class PromozioneDAO {
         }
     }
 
+    // Metodo che restituisce una lista di promozioni attive nel DB
     public List<Promozione> promozioniAttive(String tipoTreno, boolean isFedelta, String dataViaggio) {
         List<Promozione> lista = new ArrayList<>();
         String sql = "SELECT * FROM promozioni WHERE " +
@@ -51,4 +54,16 @@ public class PromozioneDAO {
         }
         return lista;
     }
+
+    // Metodo che elimina una promozione presente nel DB dato un codice specifico
+    public void eliminaPromozione(String codicePromo) {
+        String sql = "DELETE FROM promozioni WHERE CodicePromozione = ?";
+        try (PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)) {
+            stmt.setString(1, codicePromo);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -10,17 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-Questa classe serve per la gestione del Database riferito ai biglietti. Di seguito vengono
-implementati metodi utili per:
-- aggiunta di un nuovo biglietto;
-  -- in questo metodo deve essere garantita la gestione tramite transazione
-- ricerca dei biglietti per codice fiscale utente;
-- modifica di un biglietto;
-- ricerca dei biglietti per codice del biglietto;
-- elimina biglietti.
- */
-
 public class BigliettoDAO {
 
     // Inserimento biglietto con connessione esterna (per transazione)

@@ -4,6 +4,11 @@ import java.security.SecureRandom;
 
 public class CodiceCartaFedelta {
 
+    /*
+    In questa classe è implementato un metodo che, dato un insieme di caratteri,
+    genera un codice casuale che fungerà da ID per la carta fedeltà di un utente.
+     */
+
     private static final String CARATTERI = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom random = new SecureRandom();
 

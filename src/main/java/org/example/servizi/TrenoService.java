@@ -22,6 +22,8 @@ public class TrenoService {
         trenoDataBase.addTreno(t);
     }
 
+    public void removeTrain(String idtreno){trenoDataBase.eliminaTreno(idtreno);}
+
     public Treno getTrainByID(String ID){
         return trenoDataBase.trovaTrenoPerID(ID);
     }
