@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="500.0" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.ModificaBigliettoController">
+   <children>
+      <Label text="Nuova Data">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <DatePicker fx:id="dataPicker" />
+      <Label text="Nuova Ora Partenza (hh:mm) ">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="oraField" prefHeight="27.0" prefWidth="343.0" promptText="08:30" />
+      <Label text="Nuova Classe">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="classeComboBox" prefHeight="23.0" prefWidth="233.0" />
+      <Button fx:id="modificaButton" disable="true" mnemonicParsing="false" onAction="#handleModifica" text="Modifica">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <TextArea fx:id="outputArea" editable="false" prefHeight="80.0" prefWidth="500.0" wrapText="true" />
+      <Button fx:id="chiudiButton" mnemonicParsing="false" onAction="#handleChiudi" text="Chiudi">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+   </children>
+   <padding>
+      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+   </padding>
+</VBox>

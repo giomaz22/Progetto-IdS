@@ -1,6 +1,7 @@
 import org.example.model.Promozione;
 import org.example.persistence.DBConnectionSingleton;
 import org.example.persistence.dao.PromozioneDAO;
+import org.example.persistence.popolaDBUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ public class PromoTest {
 
     @BeforeEach
     public void init(){
+        popolaDBUtil.resetDatabase();
         this.promozioneDAO = new PromozioneDAO();
         try {
             this.dbConnection = DBConnectionSingleton.getConnection();

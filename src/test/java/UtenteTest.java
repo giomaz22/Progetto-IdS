@@ -1,5 +1,6 @@
 import org.example.model.Utente;
 import org.example.persistence.dao.UtenteDAO;
+import org.example.persistence.popolaDBUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ public class UtenteTest {
 
     @BeforeEach
     public void init() {
+        popolaDBUtil.resetDatabase();
         utenteDAO = new UtenteDAO();
     }
 
@@ -38,6 +40,9 @@ public class UtenteTest {
     @ValueSource(strings = {"salv@alice.it"})
     @DisplayName("Test che verifica se è presente un utente nel DB data l'email")
     public void checkEmailUtente(String email){
+        Utente utDaInserire = new Utente("Salvatore", "Mazzei", "MZZSVT68D27B968B", "27/04/1968", "salvatore", email, false);
+        utenteDAO.addCliente(utDaInserire);
+
         Utente ret = utenteDAO.trovaPerEmail(email);
         assertNotNull(ret, "Utente non trovato");
     }

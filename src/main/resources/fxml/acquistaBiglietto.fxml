@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane fx:id="dialogPane"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.AcquistaBigliettoController"
+            prefHeight="300.0" prefWidth="529.0">
+
+   <header>
+      <VBox spacing="10.0" prefWidth="100.0">
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+         <children>
+            <Label fx:id="infoViaggioLabel" text="Dettagli viaggio" wrapText="true" />
+
+            <Label text="Codice Fiscale">
+               <font><Font size="14.0"/></font>
+            </Label>
+            <TextField fx:id="cfField" promptText="CF"/>
+
+            <Label text="Numero Carta di Credito">
+               <font><Font size="14.0"/></font>
+            </Label>
+            <TextField fx:id="cartaField" promptText="Numero carta valido a 16 cifre"/>
+
+            <CheckBox fx:id="prenotazioneCheck" text="Hai una prenotazione?" onAction="#togglePNRField"/>
+            <TextField fx:id="pnrField" promptText="PNR" disable="true"/>
+            <CheckBox fx:id="monitorCheck" mnemonicParsing="false" text="Monitora treno dopo l'acquisto" />
+
+         </children>
+      </VBox>
+   </header>
+
+   <buttonTypes>
+      <ButtonType fx:constant="OK"/>
+      <ButtonType fx:constant="CANCEL"/>
+   </buttonTypes>
+
+</DialogPane>

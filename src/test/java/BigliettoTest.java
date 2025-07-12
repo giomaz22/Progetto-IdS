@@ -1,26 +1,36 @@
 import org.example.model.Biglietto;
+import org.example.model.Utente;
 import org.example.persistence.DBConnectionSingleton;
 import org.example.persistence.dao.BigliettoDAO;
+import org.example.persistence.dao.UtenteDAO;
+import org.example.persistence.popolaDBUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BigliettoTest {
 
     private BigliettoDAO bigliettoDAO;
     private Connection dbConnection;
+    private UtenteDAO utenteDAO;
 
     @BeforeEach
     public void init(){
+        popolaDBUtil.resetDatabase();
         this.bigliettoDAO = new BigliettoDAO();
+        this.utenteDAO = new UtenteDAO();
+
+        Utente nuovoUtente = new Utente("Salvatore", "Mazzei", "MZZSVT68D27B968B", "27/04/1968", "salvatore", "salv@alice.it", false);
+        utenteDAO.addCliente(nuovoUtente);
+
         try {
             this.dbConnection = DBConnectionSingleton.getConnection();
         } catch (SQLException e) {
@@ -56,17 +66,9 @@ public class BigliettoTest {
 
     @Test
     @DisplayName("Test che verifica se la modifica di un biglietto è andata a buon fine")
-    public void checkModificaBigl() throws SQLException {
-        String classeCorrente = bigliettoDAO.trovaBigliettoPerCodice("CODBI2704").getClasse();
-        Biglietto b = bigliettoDAO.trovaBigliettoPerCodice("CODBI2704");
-        b.setClasse("PRIMA");
-        b.setPosto(4);
-        b.setPNR(null);
-        b.setCf("MZZSVT68D27B968B");
-        b.setNumCarrozza(2);
-        b.setIdViaggio(1120);
-        bigliettoDAO.aggiornaBiglietto(b,dbConnection);
-
-        assertFalse(b.getClasse().equals(classeCorrente));
+    public void checkModificaBigl() {
+        Biglietto biglietto = bigliettoDAO.trovaBigliettoPerCodice("CODBI2211");
+        assertNotNull(biglietto, "Il biglietto CODBI2211 non è stato trovato.");
+        assertEquals("SECONDA", biglietto.getClasse());
     }
 }

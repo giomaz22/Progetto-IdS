@@ -212,7 +212,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
 
         LocalDateTime dataViaggio = LocalDateTime.parse(v.getData());
         LocalDateTime dataScadenza = dataViaggio.minusHours(12);
-        String scadenzaFormattata = dataScadenza.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+        String scadenzaFormattata = dataScadenza.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         int numCarrozza = new Random().nextInt(6) + 1;
         int posto = new Random().nextInt(30) + 1;

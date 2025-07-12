@@ -1,6 +1,7 @@
 import org.example.model.Viaggio;
 import org.example.persistence.DBConnectionSingleton;
 import org.example.persistence.dao.ViaggioDAO;
+import org.example.persistence.popolaDBUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ public class ViaggioTest {
 
     @BeforeEach
     public void init() {
+        popolaDBUtil.resetDatabase();
         viaggioDAO = new ViaggioDAO();
         try{
             this.conn = DBConnectionSingleton.getConnection();

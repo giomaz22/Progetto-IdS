@@ -1,6 +1,7 @@
 import org.example.model.Treno;
 import org.example.persistence.DBConnectionSingleton;
 import org.example.persistence.dao.TrenoDAO;
+import org.example.persistence.popolaDBUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ public class TrenoTest {
 
     @BeforeEach
     public void init(){
+        popolaDBUtil.resetDatabase();
         this.trenoDAO = new TrenoDAO();
         try {
             this.dbConnection = DBConnectionSingleton.getConnection();
@@ -57,11 +59,14 @@ public class TrenoTest {
     @Test
     @DisplayName("Test che verifica l'aggiornamento di un treno")
     public void checkAggiornamentoTreno() throws SQLException {
+        Treno trenoDaInserire = new Treno("FR-273", "FrecciaRossa", "ARRIVATO", 5);
+        trenoDAO.addTreno(trenoDaInserire);
+
         trenoDAO.aggiornaStatoTreno("FR-273", "IN PARTENZA", dbConnection);
 
         Treno checkAggiornato = trenoDAO.trovaTrenoPerID("FR-273");
         assertFalse(checkAggiornato == null);
-        assertEquals(checkAggiornato.getStatoTreno(), "IN PARTENZA");
+        assertEquals("IN PARTENZA", checkAggiornato.getStatoTreno());
     }
 
     @Test

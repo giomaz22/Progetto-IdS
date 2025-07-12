@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="15.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.DashboardController">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <children>
+      <Label text="Benvenuto nella tua Dashboard!">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Button fx:id="cercaButton" mnemonicParsing="false" onAction="#handleCerca" text="Cerca Viaggi" textFill="#d23535">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="prenotaButton" mnemonicParsing="false" onAction="#handlePrenota" text="Prenota Viaggio" textFill="#250c70">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="acquistaButton" mnemonicParsing="false" onAction="#handleAcquista" text="Acquista Biglietto" textFill="#0eeef2">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="fedeltaButton" mnemonicParsing="false" onAction="#handleFedelta" text="Sottoscrivi Fedeltà" textFill="#1b09e0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="promoButton" mnemonicParsing="false" onAction="#handlePromo" text="Visualizza Promozioni" textFill="#1b1a05">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="modificaButton" mnemonicParsing="false" onAction="#handleModifica" text="Modifica Biglietto" textFill="#d73057">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="notificheButton" mnemonicParsing="false" onAction="#handleNotifiche" text="Notifiche Fedeltà">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#handleLogout" text="Logout" textFill="#140ca8">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+   </children>
+</VBox>

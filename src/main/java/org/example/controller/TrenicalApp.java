@@ -1,12 +1,26 @@
 package org.example.controller;
 
+import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class TrenicalApp  {
+public class TrenicalApp extends Application {
+
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/fxml/home.fxml"));
+            primaryStage.setTitle("Trenical - Home");
+            primaryStage.setScene(new Scene(root));
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void handleLogin() {
         caricaVista("/fxml/login.fxml", "Login");
@@ -27,7 +41,6 @@ public class TrenicalApp  {
         caricaVista("/fxml/ricercaViaggi.fxml", "Ricerca Viaggi");
     }
 
-
     @FXML
     private void handleExit() {
         System.exit(0);
@@ -44,5 +57,9 @@ public class TrenicalApp  {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

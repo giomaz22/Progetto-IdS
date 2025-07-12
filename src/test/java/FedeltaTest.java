@@ -1,5 +1,8 @@
 import org.example.model.Fedelta;
+import org.example.model.Utente;
 import org.example.persistence.dao.FedeltaDAO;
+import org.example.persistence.dao.UtenteDAO;
+import org.example.persistence.popolaDBUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,10 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FedeltaTest {
 
     private FedeltaDAO fedeltaDAO;
+    private UtenteDAO utenteDAO;
 
     @BeforeEach
     public void init() {
+        popolaDBUtil.resetDatabase();
         fedeltaDAO = new FedeltaDAO();
+        utenteDAO = new UtenteDAO();
+
+        Utente nuovoUtente = new Utente("Salvatore", "Mazzei", "MZZSVT68D27B968B", "27/04/1968", "salvatore", "salv@alice.it", false);
+        utenteDAO.addCliente(nuovoUtente);
     }
 
     @Test

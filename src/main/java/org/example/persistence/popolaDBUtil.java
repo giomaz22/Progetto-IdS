@@ -3,10 +3,12 @@ package org.example.persistence;
 import org.example.model.*;
 import org.example.persistence.dao.*;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class popolaDBUtil {
-    public static void main(String[] args) throws SQLException {
+    public static void popolaDatabase () throws SQLException {
         CreaTabelleUtil.init(); // creo nuove tabelle
 
         TrenoDAO trenoDB;
@@ -93,5 +95,27 @@ public class popolaDBUtil {
         p.setDataScadenza("23/07/2025");
         p.setNumCarrozza(5);
         prenotazioneDB.addPrenotazione(p, DBConnectionSingleton.getConnection());
+    }
+
+    public static void resetDatabase() {
+        try (Connection conn = DBConnectionSingleton.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
+            stmt.execute("DELETE FROM prenotazioni");
+            stmt.execute("DELETE FROM biglietti");
+            stmt.execute("DELETE FROM fedelta");
+            stmt.execute("DELETE FROM utenti");
+            stmt.execute("DELETE FROM viaggi");
+            stmt.execute("DELETE FROM treni");
+            stmt.execute("DELETE FROM promozioni");
+            stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
+
+            popolaDatabase();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore reset");
+        }
     }
 }

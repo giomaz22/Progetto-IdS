@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.RegistrazioneController">
+
+   <children>
+      <AnchorPane prefHeight="411.0" prefWidth="600.0">
+         <children>
+
+            <TextField fx:id="nomeField" layoutX="213.0" layoutY="46.0" promptText="Mario" />
+            <TextField fx:id="cognomeField" layoutX="213.0" layoutY="93.0" promptText="Rossi" />
+            <TextField fx:id="cfField" layoutX="213.0" layoutY="139.0" promptText="RSSMRA80L05F593A" />
+            <DatePicker fx:id="dataNascitaPicker" layoutX="213.0" layoutY="185.0" promptText="Data di nascita" />
+            <TextField fx:id="emailField" layoutX="213.0" layoutY="226.0" promptText="rosmar@gmail.com" />
+            <PasswordField fx:id="passwordField" layoutX="213.0" layoutY="265.0" promptText="Password" />
+
+            <SplitMenuButton fx:id="adminMenu" layoutX="470.0" layoutY="316.0" text="isAdmin">
+               <items>
+                  <MenuItem onAction="#setAdminTrue" text="TRUE" />
+                  <MenuItem onAction="#setAdminFalse" text="FALSE" />
+               </items>
+            </SplitMenuButton>
+
+            <Text layoutX="68.0" layoutY="66.0" text="Nome" />
+            <Text layoutX="68.0" layoutY="113.0" text="Cognome" />
+            <Text layoutX="68.0" layoutY="159.0" text="Codice Fiscale" />
+            <Text layoutX="66.0" layoutY="205.0" text="Data di nascita" />
+            <Text layoutX="70.0" layoutY="246.0" text="Email" />
+            <Text layoutX="69.0" layoutY="285.0" text="Password" />
+            <Text layoutX="470.0" layoutY="275.0" text="Utente: FALSE" />
+            <Text layoutX="470.0" layoutY="295.0" text="Admin: TRUE" />
+
+            <Button fx:id="confermaButton" layoutX="213.0" layoutY="320.0" onAction="#handleConferma" text="Conferma Registrazione" />
+            <Button fx:id="tornaLoginButton" layoutX="213.0" layoutY="360.0" onAction="#handleTornaLogin" text="Torna al Login" />
+
+            <ImageView fitHeight="25.0" fitWidth="129.0" layoutX="487.0" layoutY="14.0" preserveRatio="true">
+               <image>
+                  <Image url="@../images/trenicalLogo.png" />
+               </image>
+            </ImageView>
+
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>

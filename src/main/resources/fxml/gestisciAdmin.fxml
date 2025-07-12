@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.AdminDashboardController">
+  <tabs>
+    <Tab text="Gestione Viaggi">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <VBox prefHeight="571.0" prefWidth="1000.0" spacing="10.0">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <VBox prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <Label text="ID Viaggio">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="idViaggioField" />
+                                    <Label text="ID Treno">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="idTrenoField" />
+                                    <Label fx:id="postiField" text="Posti">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField />
+                                 </children>
+                              </VBox>
+                              <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <Label text="Ora Partenza">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="oraPartenzaField" />
+                                    <Label text="Ora Arrivo">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="oraArrivoField" />
+                                    <Label fx:id="postiField1" text="Data">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="dataField" promptText="GG/MM/AAA" />
+                                 </children>
+                              </VBox>
+                              <VBox layoutX="120.0" layoutY="10.0" prefHeight="136.0" prefWidth="123.0">
+                                 <children>
+                                    <Label prefHeight="20.0" prefWidth="118.0" text="Stazione Partenza">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="stazionePartenzaField" />
+                                    <Label text="Stazione Arrivo">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="stazioneArrivoField" />
+                                    <Label fx:id="postiField11" text="Prezzo">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="prezzoField" />
+                                 </children>
+                              </VBox>
+                              <VBox prefHeight="136.0" prefWidth="171.0">
+                                 <children>
+                                    <Label text="Classi Disponibili">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="classiField" />
+                                    <Button mnemonicParsing="false" onAction="#handleAggiungiViaggio" text="Aggiungi Viaggio">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Button>
+                                    <Button mnemonicParsing="false" onAction="#handleEliminaViaggio" text="Elimina Viaggio">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <TableView prefHeight="200.0" prefWidth="200.0">
+                          <columns>
+                            <TableColumn fx:id="colIdViaggio" prefWidth="75.0" text="ID " />
+                            <TableColumn fx:id="colIdTreno" prefWidth="75.0" text="Treno" />
+                              <TableColumn fx:id="colData" prefWidth="75.0" text="Data" />
+                              <TableColumn fx:id="colPartenza" prefWidth="75.0" text="Partenza" />
+                              <TableColumn fx:id="colArrivo" prefWidth="75.0" text="Arrivo" />
+                              <TableColumn fx:id="colPrezzo" prefWidth="75.0" text="Prezzo" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </children></AnchorPane>
+      </content>
+    </Tab>
+      <Tab text="Gestione Treni">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <VBox layoutX="5.0" prefHeight="330.0" prefWidth="973.0">
+                     <children>
+                        <Label text="Gestione Treni">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="treniTable" prefHeight="205.0" prefWidth="978.0">
+                          <columns>
+                            <TableColumn fx:id="colTrenoId" prefWidth="75.0" text="ID Treno" />
+                            <TableColumn fx:id="colTipoTreno" prefWidth="75.0" text="Tipo" />
+                              <TableColumn fx:id="colStatoTreno" prefWidth="75.0" text="Stato" />
+                              <TableColumn fx:id="colNumCarrozze" prefWidth="75.0" text="Carrozze" />
+                          </columns>
+                        </TableView>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <TextField fx:id="trnoIdField" promptText="ID Treno" />
+                              <TextField fx:id="tipoTrenoField" promptText="Tipo Treno" />
+                              <TextField fx:id="statoTrenoField" promptText="Stato Treno" />
+                              <Spinner fx:id="carrozzeSpinner" editable="true" />
+                              <Button mnemonicParsing="false" onAction="#handleAggiungiTreno" text="Aggiungi Treno">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#handleEliminaTreno" text="Elimina Treno">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </AnchorPane>
+        </content>
+      </Tab>
+      <Tab text="Gestione Promozioni">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <VBox prefHeight="571.0" prefWidth="1000.0" spacing="10.0">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <VBox prefHeight="136.0" prefWidth="205.0">
+                                 <children>
+                                    <Label text="Codice Promo">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="codicePromoField" />
+                                    <Label text="Sconto percentuale">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="scontoField" />
+                                    <Label text="Tipo Treno">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="tipoTrenoPromoField" />
+                                 </children>
+                              </VBox>
+                              <VBox layoutX="10.0" layoutY="10.0" prefHeight="136.0" prefWidth="205.0">
+                                 <children>
+                                    <Label text="Inizio Promo">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="inizioField" />
+                                    <Label text="Fine Promo">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="fineField" />
+                                    <CheckBox fx:id="soloFedeltaCheck" mnemonicParsing="false" text="Solo per utenti fedeltà">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </CheckBox>
+                                    <Button mnemonicParsing="false" onAction="#handleInserisciPromo" text="Inserisci Promo">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Button>
+                                    <Button mnemonicParsing="false" onAction="#handleEliminaPromo" text="Elimina Promo">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <TableView prefHeight="200.0" prefWidth="200.0">
+                          <columns>
+                            <TableColumn fx:id="colCodPromo" prefWidth="75.0" text="Codice" />
+                            <TableColumn fx:id="colSconto" prefWidth="130.66663360595703" text="Sconto Percentuale" />
+                              <TableColumn fx:id="colSoloFedelta" prefWidth="89.33335876464844" text="Solo Fedeltà" />
+                              <TableColumn fx:id="colTipoTreno" prefWidth="80.6666259765625" text="Tipo Treno" />
+                              <TableColumn fx:id="colInizio" prefWidth="68.66668701171875" text="Inizio" />
+                              <TableColumn fx:id="colFine" prefWidth="70.66665649414062" text="Fine" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
+  </tabs>
+</TabPane>
