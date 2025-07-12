@@ -80,18 +80,21 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
                     .setCognome(trovato.getCognome())
                     .setCodiceFiscale(trovato.getCodiceFiscale())
                     .setDataDiNascita(trovato.getDataNascita())
+                    .setAdmin(trovato.isAmministratore())
                     .build();
 
             Fedelta fedUt = fedeltaService.findFedeltaByCF(utente.getCodiceFiscale());
-            FedeltaDTO fedelta = FedeltaDTO.newBuilder()
-                    .setIDcarta(fedUt.getID())
-                    .setCFpossess(fedUt.getCFpossessore())
-                    .setPuntiFed(fedUt.getPuntiCarta())
-                    .build();
+            FedeltaDTO.Builder fedeltaBuilder = FedeltaDTO.newBuilder();
+            if(fedUt != null) {
+                fedeltaBuilder
+                        .setIDcarta(fedUt.getID())
+                        .setCFpossess(fedUt.getCFpossessore())
+                        .setPuntiFed(fedUt.getPuntiCarta());
+            }
 
             LoginResponse response = LoginResponse.newBuilder()
                     .setLoginUt(utente)
-                    .setLoginFed(fedelta)
+                    .setLoginFed(fedeltaBuilder.build())
                     .build();
 
             responseObserver.onNext(response);
@@ -104,6 +107,7 @@ public class TrenicalServiceImpl extends TrenicalServiceGrpc.TrenicalServiceImpl
                     .setCognome(admin.getCognome())
                     .setCodiceFiscale(admin.getCodiceFiscale())
                     .setDataDiNascita(admin.getDataNascita())
+                    .setAdmin(admin.isAmministratore())
                     .build();
 
             LoginResponse response = LoginResponse.newBuilder()

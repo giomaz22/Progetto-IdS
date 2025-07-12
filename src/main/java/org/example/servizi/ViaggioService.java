@@ -9,19 +9,16 @@ import org.example.persistence.dao.ViaggioDAO;
 import org.example.server.TrenicalServiceImpl;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
 public class ViaggioService {
     private final ViaggioDAO viaggioDataBase;
     private final TrenoDAO trenoDataBase;
-    private final TrenicalServiceImpl trenicalService;
 
     public ViaggioService(){
         this.viaggioDataBase = new ViaggioDAO();
         this.trenoDataBase = new TrenoDAO();
-        this.trenicalService = new TrenicalServiceImpl();
     }
 
     public void addNewViaggio(Viaggio v){
@@ -110,36 +107,6 @@ public class ViaggioService {
         return 0.0;
     }
 
-    public void updateStatoViaggio(int idViaggio, String idTreno, String oraPartenza, String oraArrivo, String newStato) throws SQLException {
-        Viaggio v = findViaggioById(idViaggio);
-        String message = "Nuovo aggiornamento sul treno " + idTreno;
-
-        Connection conn = null;
-        try {
-            conn = DBConnectionSingleton.getConnection();
-            conn.setAutoCommit(false);
-            if(idTreno != null){
-                if(v.getIDtreno().equals(idTreno)){
-                    trenoDataBase.aggiornaStatoTreno(idTreno, newStato, conn);
-                    viaggioDataBase.aggiornaStatoViaggio(idTreno, oraPartenza, oraArrivo, conn);
-                }
-
-            } else{
-                conn.rollback();
-                throw new SQLException("Treno non trovato");
-            }
-        } catch (SQLException e) {
-            if(conn != null){
-                conn.rollback();
-            }
-        } finally {
-            if(conn != null){
-                conn.setAutoCommit(true);
-                conn.close();
-            }
-        }
-        trenicalService.notificaCambiamentoTreno(idTreno, newStato, oraPartenza, oraArrivo, message);
-    }
 
     public String dettagliAttualiViaggio(int idViaggio) {
         Viaggio v = findViaggioById(idViaggio);

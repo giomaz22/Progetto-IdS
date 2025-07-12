@@ -2,7 +2,6 @@ package org.example.client;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.stub.StreamObserver;
 import javafx.application.Platform;
 import org.example.controller.StatoTrenoController;
 import org.example.grpc.*;

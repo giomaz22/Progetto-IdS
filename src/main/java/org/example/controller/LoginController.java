@@ -37,7 +37,7 @@ public class LoginController {
             boolean isAdmin = response.getLoginUt().getAdmin();
 
             if (isAdmin) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/adminDashboard.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gestisciAdmin.fxml"));
                 Parent root = loader.load();
                 Stage stage = (Stage) loginButton.getScene().getWindow();
                 stage.setScene(new Scene(root));
@@ -64,7 +64,7 @@ public class LoginController {
     @FXML
     private void handleRegistrazione() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/registrazione.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/registrati.fxml"));
             Parent root = loader.load();
 
             Stage stage = (Stage) registratiButton.getScene().getWindow();
