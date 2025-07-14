@@ -35,11 +35,11 @@ public class TrenicalClient {
 
     // loginUtente OK
     public LoginResponse loginUtente(String email, String password) {
+
         LoginRequest request = LoginRequest.newBuilder()
                 .setEmail(email)
                 .setPassword(password)
                 .build();
-
         return blockingStub.login(request);
     }
 

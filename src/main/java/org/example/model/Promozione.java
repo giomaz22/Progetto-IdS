@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,4 +24,25 @@ public class Promozione {
     boolean soloFedelta;
     String tipoTreno;
     String inizioPromo, finePromo;
+
+    private static final DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter sqlFormatter = DateTimeFormatter.ISO_LOCAL_DATE;  // yyyy-MM-dd
+
+    public void setInizioPromoDaInput(String dataInput) {
+        try {
+            LocalDate date = LocalDate.parse(dataInput, inputFormatter);
+            this.inizioPromo = date.format(sqlFormatter);
+        } catch (DateTimeParseException e) {
+            this.inizioPromo = null;
+        }
+    }
+
+    public void setFinePromoDaInput(String dataInput) {
+        try {
+            LocalDate date = LocalDate.parse(dataInput, inputFormatter);
+            this.finePromo = date.format(sqlFormatter);
+        } catch (DateTimeParseException e) {
+            this.finePromo = null;
+        }
+    }
 }

@@ -43,7 +43,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <DatePicker />
+            <DatePicker fx:id="dataPicker"/>
             <Label text="Tipo Treno:">
                <font>
                   <Font size="14.0" />
@@ -54,8 +54,8 @@
          </children>
       </HBox>
       <TableView fx:id="viaggiTable" prefHeight="326.0" prefWidth="919.0">
-        <columns>
-          <TableColumn fx:id="colId" text="ID" />
+         <columns>
+            <TableColumn fx:id="colId" text="ID" />
             <TableColumn fx:id="colPartenza" prefWidth="120.0" text="Partenza" />
             <TableColumn fx:id="colArrivo" prefWidth="120.0" text="Arrivo" />
             <TableColumn fx:id="colData" prefWidth="100.0" text="Data" />
@@ -64,7 +64,7 @@
             <TableColumn fx:id="colPrezzo" text="Prezzo" />
             <TableColumn fx:id="colClasse" prefWidth="150.0" text="Classi" />
             <TableColumn fx:id="colAzioni" prefWidth="125.0" text="Azione" />
-        </columns>
+         </columns>
       </TableView>
    </children>
    <padding>

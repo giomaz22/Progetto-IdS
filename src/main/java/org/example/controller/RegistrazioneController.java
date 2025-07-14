@@ -2,6 +2,7 @@ package org.example.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 import org.example.client.TrenicalClient;
 import org.example.grpc.RegistraResponse;
 import org.example.grpc.UtenteDTO;
+
 
 public class RegistrazioneController {
 
@@ -85,7 +87,8 @@ public class RegistrazioneController {
             }
 
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Errore", "Errore interno: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Errore", "Errore interno: " + Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
         }
     }
 

@@ -25,6 +25,10 @@ public class ViaggioService {
         viaggioDataBase.addNewViaggio(v);
     }
 
+    public List<Viaggio> getTuttiIViaggi(){
+        return viaggioDataBase.tuttiIViaggi();
+    }
+
     public void removeViaggio(int idViaggio){viaggioDataBase.eliminaViaggio(idViaggio);}
 
     public List<Viaggio> ricercaViaggi(String S_partenza, String S_arrivo, String data, String tipoTreno){
@@ -106,7 +110,6 @@ public class ViaggioService {
         }
         return 0.0;
     }
-
 
     public String dettagliAttualiViaggio(int idViaggio) {
         Viaggio v = findViaggioById(idViaggio);

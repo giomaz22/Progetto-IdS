@@ -27,7 +27,7 @@ public class FedeltaController {
         String cf = cfField.getText().trim().toUpperCase();
 
         if (cf.length() != 16) {
-            outputArea.setText("Codice Fiscale non valido.");
+            outputArea.setText("Codice Fiscale non valido. Deve contenere 16 caratteri.");
             return;
         }
 
@@ -35,16 +35,29 @@ public class FedeltaController {
             FedeltaResponse response = client.fedeltaUtente(cf);
 
             if (response.getSuccesso()) {
-                outputArea.setText("Iscrizione avvenuta con successo!\n" +
-                        "Carta Fedeltà: " + response.getDettagliCarta().getIDcarta() +
-                        "\nPunti: " + response.getDettagliCarta().getPuntiFed());
+                outputArea.setText("""
+                Iscrizione avvenuta con successo!
+                Carta Fedeltà: %s
+                Punti iniziali: %d
+                """.formatted(
+                        response.getDettagliCarta().getIDcarta(),
+                        response.getDettagliCarta().getPuntiFed()
+                ));
+            } else if (response.getDettagliCarta().getIDcarta() != null && !response.getDettagliCarta().getIDcarta().isEmpty()) {
+                outputArea.setText("""
+                Utente già iscritto al programma fedeltà.
+                Carta esistente: %s
+                Punti accumulati: %d
+                """.formatted(
+                        response.getDettagliCarta().getIDcarta(),
+                        response.getDettagliCarta().getPuntiFed()
+                ));
             } else {
-                outputArea.setText("[CARTA] " + response.getMessaggioConfermaFedelta() +
-                        "\nCarta: " + response.getDettagliCarta().getIDcarta() +
-                        "\nPunti: " + response.getDettagliCarta().getPuntiFed());
+                outputArea.setText("[ERRORE] " + response.getMessaggioConfermaFedelta());
             }
         } catch (Exception e) {
             outputArea.setText("[ERRORE] " + e.getMessage());
         }
     }
+
 }

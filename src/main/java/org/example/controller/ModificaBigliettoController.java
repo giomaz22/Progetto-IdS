@@ -1,63 +1,91 @@
 package org.example.controller;
 
-import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import org.example.client.TrenicalClient;
 import org.example.grpc.BigliettoDTO;
 import org.example.grpc.ModificaBigliettoResponse;
 
-import java.time.format.DateTimeFormatter;
-
 public class ModificaBigliettoController {
-    @FXML
-    private DatePicker dataPicker;
+
+    @FXML private TextField codBigliettoField;
+    @FXML private TextField carrozzaField;
+    @FXML private TextField postoField;
+    @FXML private DatePicker dataPicker;
     @FXML private TextField oraField;
     @FXML private ComboBox<String> classeComboBox;
     @FXML private Button modificaButton;
     @FXML private TextArea outputArea;
-    @FXML private Button chiudiButton;
 
     private TrenicalClient client;
-    private BigliettoDTO bigliettoDaModificare;
 
     @FXML
     public void initialize() {
-        client = new TrenicalClient("localhost", 50051);
-        classeComboBox.getItems().addAll("PRIMA", "SECONDA", "BUSINESS");
-
-        // Disabilita modificaButton fino a compilazione campi
-        BooleanBinding formValido = dataPicker.valueProperty().isNotNull()
-                .and(oraField.textProperty().isNotEmpty())
-                .and(classeComboBox.valueProperty().isNotNull());
-
-        modificaButton.disableProperty().bind(formValido.not());
+        setupComboBox();
+        setupListeners();
     }
 
-    public void setBigliettoDaModificare(BigliettoDTO b) {
-        this.bigliettoDaModificare = b;
+    // Metodo per iniettare il client gRPC dal chiamante
+    public void setClient(TrenicalClient client) {
+        this.client = client;
+    }
+
+    private void setupComboBox() {
+        classeComboBox.getItems().addAll("PRIMA", "SECONDA", "Business");
+    }
+
+    private void setupListeners() {
+        modificaButton.setDisable(true);
+
+        codBigliettoField.textProperty().addListener((obs, oldV, newV) -> checkForm());
+        carrozzaField.textProperty().addListener((obs, oldV, newV) -> checkForm());
+        postoField.textProperty().addListener((obs, oldV, newV) -> checkForm());
+        dataPicker.valueProperty().addListener((obs, oldV, newV) -> checkForm());
+        oraField.textProperty().addListener((obs, oldV, newV) -> checkForm());
+        classeComboBox.valueProperty().addListener((obs, oldV, newV) -> checkForm());
+    }
+
+    private void checkForm() {
+        boolean allFilled = !codBigliettoField.getText().isEmpty()
+                && !carrozzaField.getText().isEmpty()
+                && !postoField.getText().isEmpty()
+                && dataPicker.getValue() != null
+                && !oraField.getText().isEmpty()
+                && classeComboBox.getValue() != null;
+
+        modificaButton.setDisable(!allFilled);
     }
 
     @FXML
     private void handleModifica() {
-        String nuovaData = dataPicker.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        String nuovaOra = oraField.getText().trim();
-        String nuovaClasse = classeComboBox.getValue();
-
         try {
-            ModificaBigliettoResponse res = client.modificaBigliettoAcq(
-                    bigliettoDaModificare, nuovaData, nuovaOra, nuovaClasse);
+            String codBiglietto = codBigliettoField.getText().trim();
+            int numCarrozza = Integer.parseInt(carrozzaField.getText().trim());
+            int posto = Integer.parseInt(postoField.getText().trim());
+            String nuovaData = dataPicker.getValue().toString();
+            String nuovaOra = oraField.getText().trim();
+            String nuovaClasse = classeComboBox.getValue();
 
-            outputArea.setText((res.getSuccesso() ? "[OK] " : "[NO] ") + res.getMessaggioModificaEffettuata());
+            BigliettoDTO biglietto = BigliettoDTO.newBuilder()
+                    .setCodBiglietto(codBiglietto)
+                    .setNumCarrozza(numCarrozza)
+                    .setPostoAssegnato(posto)
+                    .build();
+
+            ModificaBigliettoResponse response = client.modificaBigliettoAcq(biglietto, nuovaData, nuovaOra, nuovaClasse);
+            outputArea.setText(response.getMessaggioModificaEffettuata());
+
+        } catch (NumberFormatException e) {
+            outputArea.setText("Numero carrozza o posto non valido.");
         } catch (Exception e) {
-            outputArea.setText("[ERRORE] " + e.getMessage());
+            outputArea.setText("Errore nella modifica del biglietto: " + e.getMessage());
         }
     }
 
     @FXML
     private void handleChiudi() {
-        Stage stage = (Stage) chiudiButton.getScene().getWindow();
-        stage.close();
+        modificaButton.getScene().getWindow().hide();
     }
 }
+
+

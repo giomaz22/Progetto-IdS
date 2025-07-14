@@ -32,19 +32,15 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.ColorAdjust?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.LoginController">
-  <children>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.LoginController">
+   <children>
+      <AnchorPane VBox.vgrow="ALWAYS">
          <children>
             <Button fx:id="loginButton" layoutX="123.0" layoutY="200.0" mnemonicParsing="false" onAction="#handleLogin" text="Login">
                <font>
@@ -56,21 +52,19 @@
                   <Font size="14.0" />
                </font>
             </Button>
-            <ImageView fitHeight="53.0" fitWidth="218.0" layoutX="46.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/trenicalLogo.png" />
-               </image>
+            <ImageView disable="true" fitHeight="53.0" fitWidth="218.0" layoutX="46.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+               <Image url="@../images/trenicalLogo.png" />
             </ImageView>
             <TextField fx:id="emailField" layoutX="63.0" layoutY="115.0" promptText="email">
                <font>
                   <Font size="14.0" />
                </font>
             </TextField>
-            <TextField fx:id="passwordField" layoutX="63.0" layoutY="154.0" promptText="password">
+            <PasswordField fx:id="passwordField" layoutX="63.0" layoutY="154.0" promptText="password">
                <font>
                   <Font size="14.0" />
                </font>
-            </TextField>
+            </PasswordField>
             <Label layoutX="35.0" layoutY="336.0" text="Non hai un account?">
                <font>
                   <Font name="System Italic" size="14.0" />
@@ -81,7 +75,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <ImageView fitHeight="360.0" fitWidth="325.0" layoutX="301.0" layoutY="37.0" opacity="0.7" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="360.0" fitWidth="325.0" layoutX="301.0" layoutY="37.0" opacity="0.78" pickOnBounds="true" smooth="false">
                <image>
                   <Image url="@../images/trenicalImageP.jpg" />
                </image>
@@ -90,6 +84,6 @@
          <effect>
             <ColorAdjust />
          </effect>
-    </AnchorPane>
-  </children>
+      </AnchorPane>
+   </children>
 </VBox>

@@ -42,12 +42,12 @@
                                        </font>
                                     </Label>
                                     <TextField fx:id="idTrenoField" />
-                                    <Label fx:id="postiField" text="Posti">
+                                    <Label text="Posti">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
-                                    <TextField />
+                                    <TextField fx:id="postiField"/>
                                  </children>
                               </VBox>
                               <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
@@ -64,7 +64,7 @@
                                        </font>
                                     </Label>
                                     <TextField fx:id="oraArrivoField" />
-                                    <Label fx:id="postiField1" text="Data">
+                                    <Label text="Data">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
@@ -86,7 +86,7 @@
                                        </font>
                                     </Label>
                                     <TextField fx:id="stazioneArrivoField" />
-                                    <Label fx:id="postiField11" text="Prezzo">
+                                    <Label text="Prezzo">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
@@ -116,13 +116,15 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <TableView prefHeight="200.0" prefWidth="200.0">
+                        <TableView fx:id="viaggiTable" prefHeight="200.0" prefWidth="200.0">
                           <columns>
                             <TableColumn fx:id="colIdViaggio" prefWidth="75.0" text="ID " />
                             <TableColumn fx:id="colIdTreno" prefWidth="75.0" text="Treno" />
                               <TableColumn fx:id="colData" prefWidth="75.0" text="Data" />
                               <TableColumn fx:id="colPartenza" prefWidth="75.0" text="Partenza" />
                               <TableColumn fx:id="colArrivo" prefWidth="75.0" text="Arrivo" />
+                              <TableColumn fx:id="colOraPartenza" prefWidth="85.0" text="Ora Partenza" />
+                              <TableColumn fx:id="colOraArrivo" prefWidth="85.0" text="Ora Arrivo" />
                               <TableColumn fx:id="colPrezzo" prefWidth="75.0" text="Prezzo" />
                           </columns>
                         </TableView>
@@ -146,13 +148,13 @@
                           <columns>
                             <TableColumn fx:id="colTrenoId" prefWidth="75.0" text="ID Treno" />
                             <TableColumn fx:id="colTipoTreno" prefWidth="75.0" text="Tipo" />
-                              <TableColumn fx:id="colStatoTreno" prefWidth="75.0" text="Stato" />
+                              <TableColumn fx:id="colStatoTreno" prefWidth="200.0" text="Stato" />
                               <TableColumn fx:id="colNumCarrozze" prefWidth="75.0" text="Carrozze" />
                           </columns>
                         </TableView>
                         <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                            <children>
-                              <TextField fx:id="trnoIdField" promptText="ID Treno" />
+                              <TextField fx:id="trenoIdField" promptText="ID Treno" />
                               <TextField fx:id="tipoTrenoField" promptText="Tipo Treno" />
                               <TextField fx:id="statoTrenoField" promptText="Stato Treno" />
                               <Spinner fx:id="carrozzeSpinner" editable="true" />
@@ -243,12 +245,12 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <TableView prefHeight="200.0" prefWidth="200.0">
+                        <TableView fx:id="promoTable" prefHeight="200.0" prefWidth="200.0">
                           <columns>
                             <TableColumn fx:id="colCodPromo" prefWidth="75.0" text="Codice" />
                             <TableColumn fx:id="colSconto" prefWidth="130.66663360595703" text="Sconto Percentuale" />
                               <TableColumn fx:id="colSoloFedelta" prefWidth="89.33335876464844" text="Solo Fedeltà" />
-                              <TableColumn fx:id="colTipoTreno" prefWidth="80.6666259765625" text="Tipo Treno" />
+                              <TableColumn fx:id="colonTipoTreno" prefWidth="80.6666259765625" text="Tipo Treno" />
                               <TableColumn fx:id="colInizio" prefWidth="68.66668701171875" text="Inizio" />
                               <TableColumn fx:id="colFine" prefWidth="70.66665649414062" text="Fine" />
                           </columns>

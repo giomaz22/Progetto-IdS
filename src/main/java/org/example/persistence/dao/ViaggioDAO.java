@@ -1,5 +1,6 @@
 package org.example.persistence.dao;
 
+import org.example.model.Treno;
 import org.example.model.Viaggio;
 import org.example.persistence.DBConnectionSingleton;
 
@@ -72,6 +73,35 @@ public class ViaggioDAO {
         }
 
         return risultati;
+    }
+
+    // Metodo che restituisce tuttti i viaggi presenti nel DB
+    public List<Viaggio> tuttiIViaggi(){
+        List<Viaggio> risultato = new ArrayList<>();
+        String sql = "SELECT * FROM viaggi";
+
+        try(PreparedStatement stmt = DBConnectionSingleton.getConnection().prepareStatement(sql)){
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Viaggio viaggio = new Viaggio();
+                viaggio.setIDViaggio(rs.getInt("id"));
+                viaggio.setIDtreno(rs.getString("idTreno"));
+                viaggio.setNumPostiDisponibili(rs.getInt("numPostiDisponibili"));
+                viaggio.setOraPartenza(rs.getString("oraPartenza"));
+                viaggio.setOraArrivo(rs.getString("oraArrivo"));
+                viaggio.setData(rs.getString("data"));
+                viaggio.setStazionePartenza(rs.getString("stazionePartenza"));
+                viaggio.setStazioneArrivo(rs.getString("stazioneArrivo"));
+                viaggio.setPrezzo(rs.getDouble("prezzo"));
+                viaggio.setClassiDisponibili(rs.getString("classiDisponibili"));
+
+                risultato.add(viaggio);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return risultato;
     }
 
     // Metodo che restituisce un viaggio specifico dato l'id

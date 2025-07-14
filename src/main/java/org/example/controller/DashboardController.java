@@ -6,15 +6,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import org.example.client.TrenicalClient;
 
 import java.io.IOException;
 
 public class DashboardController {
 
     private String cfUtente;
+    private TrenicalClient client;
 
     public void setUtenteCf(String cfUtente) {
         this.cfUtente = cfUtente;
+    }
+
+    public void setClient(TrenicalClient client) {
+        this.client = client;
     }
 
     @FXML
@@ -23,40 +29,6 @@ public class DashboardController {
     @FXML
     private void handleCerca() {
         caricaVista("/fxml/ricercaViaggi.fxml", "Cerca Viaggi");
-    }
-
-    @FXML
-    private void handlePrenota() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ricercaViaggi.fxml"));
-        try {
-            Parent root = loader.load();
-            RicercaViaggiController controller = loader.getController();
-            controller.setModalitaAcquisto(false); // modalità prenotazione
-            controller.setUtenteCf(cfUtente); // imposta il CF utente loggato
-            Stage stage = new Stage();
-            stage.setTitle("Prenota Viaggio");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleAcquista() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ricercaViaggi.fxml"));
-        try {
-            Parent root = loader.load();
-            RicercaViaggiController controller = loader.getController();
-            controller.setModalitaAcquisto(true); // modalità acquisto
-            controller.setUtenteCf(cfUtente); // imposta il CF utente loggato
-            Stage stage = new Stage();
-            stage.setTitle("Acquista Biglietto");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @FXML
@@ -71,7 +43,24 @@ public class DashboardController {
 
     @FXML
     private void handleModifica() {
-        caricaVista("/fxml/modificaBiglietto.fxml", "Modifica Biglietto");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/modificaBiglietto.fxml"));
+            Parent root = loader.load();
+
+            ModificaBigliettoController controller = loader.getController();
+            controller.setClient(client);
+
+            Stage stage = new Stage();
+            stage.setTitle("Modifica Biglietto");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

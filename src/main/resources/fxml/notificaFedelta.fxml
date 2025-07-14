@@ -38,7 +38,7 @@
             <Font size="14.0" />
          </font>
       </CheckBox>
-      <Button fx:id="inviaButton" mnemonicParsing="false" text="Richiedi notifica" textFill="#c0731f">
+      <Button fx:id="inviaButton" mnemonicParsing="false" text="Richiedi notifica" onAction="#handleNotifica" textFill="#c0731f">
          <font>
             <Font size="14.0" />
          </font>

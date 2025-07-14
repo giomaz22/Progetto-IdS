@@ -17,6 +17,10 @@ public class PromozioneService {
         this.serviceFedelta = new FedeltaService();
     }
 
+    public List<Promozione> getTuttePromozioni(){
+        return promoDataBase.tuttiLePromozioni();
+    }
+
     public void addNewPromotion(Promozione promo) throws SQLException {
         Connection conn = DBConnectionSingleton.getConnection();
         promoDataBase.addPromozione(promo, conn);

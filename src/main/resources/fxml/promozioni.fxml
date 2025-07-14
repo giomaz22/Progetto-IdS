@@ -37,7 +37,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <TextArea editable="false" layoutX="33.0" layoutY="162.0" prefHeight="137.0" prefWidth="537.0" promptText="(output promozione)" />
+      <TextArea fx:id="outputArea" editable="false" layoutX="33.0" layoutY="162.0" prefHeight="137.0" prefWidth="537.0" promptText="(output promozione)" />
       <Button fx:id="chiudiButton" disable="true" layoutX="270.0" layoutY="321.0" onAction="#handleChiudi" text="Chiudi">
          <font>
             <Font size="14.0" />

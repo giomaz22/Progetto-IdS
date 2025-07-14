@@ -1,4 +1,5 @@
 import org.example.model.Promozione;
+import org.example.model.Treno;
 import org.example.persistence.DBConnectionSingleton;
 import org.example.persistence.dao.PromozioneDAO;
 import org.example.persistence.popolaDBUtil;
@@ -32,16 +33,23 @@ public class PromoTest {
     @Test
     @DisplayName("Test che verifica l'aggiunta di una nuova promozione")
     public void checkAggiuntaPromo() throws SQLException {
-        Promozione promoDaInserire = new Promozione("ESTATE25", 25, true, "REGIONALE", "01/07/2025", "20/07/2025");
+        Promozione promoDaInserire = new Promozione("ESTATE25", 25, true, "REGIONALE", "2025-07-01", "2025-07-31");
         promozioneDAO.addPromozione(promoDaInserire, dbConnection);
 
         assertTrue(promoDaInserire.getCodicePromozione() != null);
     }
 
     @Test
+    @DisplayName("Test che controlla le promozioni presenti nel DB")
+    public void checkEsistenzaPromozioni(){
+        List<Promozione> ret = promozioneDAO.tuttiLePromozioni();
+        assertFalse(ret.isEmpty());
+    }
+
+    @Test
     @DisplayName("Test che verifica se esiste una promozione solo fedeltà")
     public void checkSoloFedelta(){
-        List<Promozione> ret = promozioneDAO.promozioniAttive("REGIONALE", true, "16/07/2025");
+        List<Promozione> ret = promozioneDAO.promozioniAttive("REGIONALE", true, "31/07/2025");
         assertFalse(ret == null);
     }
 

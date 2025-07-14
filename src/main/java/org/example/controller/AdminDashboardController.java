@@ -9,14 +9,17 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import org.example.model.Promozione;
 import org.example.model.Treno;
 import org.example.model.Viaggio;
-import org.example.persistence.dao.PromozioneDAO;
 import org.example.servizi.PromozioneService;
 import org.example.servizi.TrenoService;
 import org.example.servizi.ViaggioService;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class AdminDashboardController {
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @FXML private TableView<Treno> treniTable;
     @FXML private TableColumn<Treno, String> colTrenoId, colTipoTreno, colStatoTreno;
@@ -31,7 +34,7 @@ public class AdminDashboardController {
             dataField, stazionePartenzaField, stazioneArrivoField, prezzoField, classiField;
     @FXML private TableView<Viaggio> viaggiTable;
     @FXML private TableColumn<Viaggio, Integer> colIdViaggio;
-    @FXML private TableColumn<Viaggio, String> colIdTreno, colData, colPartenza, colArrivo;
+    @FXML private TableColumn<Viaggio, String> colIdTreno, colData, colPartenza, colArrivo, colOraPartenza, colOraArrivo;
     @FXML private TableColumn<Viaggio, Double> colPrezzo;
     private final ViaggioService gestioneViaggio = new ViaggioService();
     private final ObservableList<Viaggio> listaViaggi = FXCollections.observableArrayList();
@@ -43,7 +46,6 @@ public class AdminDashboardController {
     @FXML private TableColumn<Promozione, String> colCodPromo, colonTipoTreno, colInizio, colFine;
     @FXML private TableColumn<Promozione, Integer> colSconto;
     @FXML private TableColumn<Promozione, Boolean> colSoloFedelta;
-    private final PromozioneDAO promozioneDAO = new PromozioneDAO();
     private final PromozioneService gestisciPromo = new PromozioneService();
     private final ObservableList<Promozione> listaPromozioni = FXCollections.observableArrayList();
 
@@ -56,7 +58,28 @@ public class AdminDashboardController {
         colNumCarrozze.setCellValueFactory(new PropertyValueFactory<>("numCarrozze"));
         listaTreni.setAll(gestioneTreni.getAllTrains());
         treniTable.setItems(listaTreni);
+
+        colIdViaggio.setCellValueFactory(new PropertyValueFactory<>("IDViaggio"));
+        colIdTreno.setCellValueFactory(new PropertyValueFactory<>("IDtreno"));
+        colData.setCellValueFactory(new PropertyValueFactory<>("data"));
+        colPartenza.setCellValueFactory(new PropertyValueFactory<>("stazionePartenza"));
+        colArrivo.setCellValueFactory(new PropertyValueFactory<>("stazioneArrivo"));
+        colOraPartenza.setCellValueFactory(new PropertyValueFactory<>("oraPartenza"));
+        colOraArrivo.setCellValueFactory(new PropertyValueFactory<>("oraArrivo"));
+        colPrezzo.setCellValueFactory(new PropertyValueFactory<>("prezzo"));
+        listaViaggi.setAll(gestioneViaggio.getTuttiIViaggi());
+        viaggiTable.setItems(listaViaggi);
+
+        colCodPromo.setCellValueFactory(new PropertyValueFactory<>("codicePromozione"));
+        colonTipoTreno.setCellValueFactory(new PropertyValueFactory<>("tipoTreno"));
+        colSconto.setCellValueFactory(new PropertyValueFactory<>("percentualeSconto"));
+        colInizio.setCellValueFactory(new PropertyValueFactory<>("inizioPromo"));
+        colFine.setCellValueFactory(new PropertyValueFactory<>("finePromo"));
+        colSoloFedelta.setCellValueFactory(new PropertyValueFactory<>("soloFedelta"));
+        listaPromozioni.setAll(gestisciPromo.getTuttePromozioni());
+        promoTable.setItems(listaPromozioni);
     }
+
 
     @FXML
     private void handleAggiungiTreno() {
@@ -91,6 +114,7 @@ public class AdminDashboardController {
         carrozzeSpinner.getValueFactory().setValue(6);
     }
 
+
     @FXML
     private void handleAggiungiViaggio() {
         try {
@@ -100,27 +124,32 @@ public class AdminDashboardController {
             v.setNumPostiDisponibili(Integer.parseInt(postiField.getText().trim()));
             v.setOraPartenza(oraPartenzaField.getText().trim());
             v.setOraArrivo(oraArrivoField.getText().trim());
-            v.setData(dataField.getText().trim());
+
+            String dataInput = dataField.getText().trim();
+            LocalDate parsedDate = LocalDate.parse(dataInput, FORMATTER);
+            v.setData(parsedDate.format(FORMATTER));
+
             v.setStazionePartenza(stazionePartenzaField.getText().trim());
             v.setStazioneArrivo(stazioneArrivoField.getText().trim());
             v.setPrezzo(Double.parseDouble(prezzoField.getText().trim()));
             v.setClassiDisponibili(classiField.getText().trim());
 
             gestioneViaggio.addNewViaggio(v);
-            listaViaggi.setAll(gestioneViaggio.ricercaViaggi("", "", v.getData(), null));
+            listaViaggi.setAll(gestioneViaggio.getTuttiIViaggi());
             clearViaggioForm();
+        } catch (DateTimeParseException e) {
+            showAlert("Formato data non valido. Usa il formato gg/MM/yyyy.");
         } catch (Exception e) {
             showAlert("Errore: " + e.getMessage());
         }
     }
-
 
     @FXML
     private void handleEliminaViaggio() {
         Viaggio selected = viaggiTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
         gestioneViaggio.removeViaggio(selected.getIDViaggio());
-        listaViaggi.setAll(gestioneViaggio.ricercaViaggi("", "", LocalDate.now().toString(), null));
+        listaViaggi.setAll(gestioneViaggio.getTuttiIViaggi());
     }
 
     private void clearViaggioForm() {
@@ -128,6 +157,7 @@ public class AdminDashboardController {
         oraArrivoField.clear(); dataField.clear(); stazionePartenzaField.clear(); stazioneArrivoField.clear();
         prezzoField.clear(); classiField.clear();
     }
+
 
     @FXML
     private void handleInserisciPromo() {
@@ -137,12 +167,21 @@ public class AdminDashboardController {
             promo.setPercentualeSconto(Integer.parseInt(scontoField.getText().trim()));
             promo.setTipoTreno(tipoTrenoPromoField.getText().trim());
             promo.setSoloFedelta(soloFedeltaCheck.isSelected());
-            promo.setInizioPromo(inizioField.getText().trim());
-            promo.setFinePromo(fineField.getText().trim());
+
+            String inizio = inizioField.getText().trim();
+            String fine = fineField.getText().trim();
+            LocalDate dataInizio = LocalDate.parse(inizio);
+            LocalDate dataFine = LocalDate.parse(fine);
+
+            promo.setInizioPromo(dataInizio.toString()); // yyyy-MM-dd
+            promo.setFinePromo(dataFine.toString());
 
             gestisciPromo.addNewPromotion(promo);
-            listaPromozioni.setAll(gestisciPromo.getPromozioniPerViaggio("", false, LocalDate.now().toString()));
+
+            listaPromozioni.setAll(gestisciPromo.getTuttePromozioni());
             clearPromoForm();
+        } catch (DateTimeParseException e) {
+            showAlert("Formato data promozione non valido. Usa il formato yyyy-MM-dd.");
         } catch (Exception e) {
             showAlert("Errore: " + e.getMessage());
         }
@@ -153,7 +192,7 @@ public class AdminDashboardController {
         Promozione selected = promoTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
         gestisciPromo.removePromotion(selected.getCodicePromozione());
-        listaPromozioni.setAll(gestisciPromo.getPromozioniPerViaggio("", false, LocalDate.now().toString()));
+        listaPromozioni.setAll(gestisciPromo.getTuttePromozioni());
     }
 
     private void clearPromoForm() {

@@ -37,6 +37,19 @@ public class popolaDBUtil {
         viaggio.setNumPostiDisponibili(50);
         viaggioDB.addNewViaggio(viaggio);
 
+        Viaggio viaggio2 = new Viaggio();
+        viaggio2.setIDViaggio(1121);
+        viaggio2.setIDtreno("RE-5584");
+        viaggio2.setClassiDisponibili("SECONDA");
+        viaggio2.setData("17/07/2025");
+        viaggio2.setOraPartenza("16:45");
+        viaggio2.setOraArrivo("17:05");
+        viaggio2.setStazionePartenza("COSENZA");
+        viaggio2.setStazioneArrivo("PAOLA");
+        viaggio2.setPrezzo(2.0);
+        viaggio2.setNumPostiDisponibili(50);
+        viaggioDB.addNewViaggio(viaggio2);
+
         UtenteDAO utenteDB;
         utenteDB = new UtenteDAO();
 
@@ -63,8 +76,8 @@ public class popolaDBUtil {
         promozioneDB = new PromozioneDAO();
 
         Promozione promozione = new Promozione();
-        promozione.setInizioPromo("01/07/2025");
-        promozione.setFinePromo("30/07/2025");
+        promozione.setInizioPromoDaInput("01/07/2025");
+        promozione.setFinePromoDaInput("01/08/2025");
         promozione.setCodicePromozione("ESTATE");
         promozione.setPercentualeSconto(30);
         promozione.setTipoTreno("REGIONALE");

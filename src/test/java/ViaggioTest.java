@@ -1,3 +1,4 @@
+import org.example.model.Treno;
 import org.example.model.Viaggio;
 import org.example.persistence.DBConnectionSingleton;
 import org.example.persistence.dao.ViaggioDAO;
@@ -27,6 +28,13 @@ public class ViaggioTest {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    @DisplayName("Test che controlla i viaggi presenti nel DB")
+    public void checkEsistenzaViaggi(){
+        List<Viaggio> ret = viaggioDAO.tuttiIViaggi();
+        assertFalse(ret.isEmpty());
     }
 
     @Test

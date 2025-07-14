@@ -2,14 +2,19 @@ package org.example.server;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import org.example.persistence.CreaTabelleUtil;
+import org.example.persistence.popolaDBUtil;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class TrenicalServer {
     private Server server;
     private final int PORT = 50051;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, SQLException {
+
+        popolaDBUtil.resetDatabase();
         TrenicalServer trenicalServer = new TrenicalServer();
         trenicalServer.start();
         trenicalServer.blockUntilShutdown();

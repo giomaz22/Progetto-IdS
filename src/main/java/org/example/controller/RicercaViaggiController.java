@@ -8,8 +8,10 @@ import javafx.scene.control.*;
 import lombok.Setter;
 import org.example.client.TrenicalClient;
 import org.example.grpc.*;
+import org.example.servizi.ClienteService;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class RicercaViaggiController {
@@ -54,11 +56,25 @@ public class RicercaViaggiController {
             {
                 azioneButton.setOnAction(e -> {
                     ViaggioDTO viaggio = getTableView().getItems().get(getIndex());
-                    if (modalitaAcquisto) {
-                        mostraDialogAcquisto(viaggio);
-                    } else {
-                        mostraDialogPrenotazione(viaggio);
-                    }
+
+                    Alert scelta = new Alert(Alert.AlertType.CONFIRMATION);
+                    scelta.setTitle("Seleziona Azione");
+                    scelta.setHeaderText("Vuoi acquistare o prenotare questo viaggio?");
+                    scelta.setContentText("Scegli un'opzione:");
+
+                    ButtonType bottoneAcquisto = new ButtonType("Acquista");
+                    ButtonType bottonePrenota = new ButtonType("Prenota");
+                    ButtonType annulla = new ButtonType("Annulla", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                    scelta.getButtonTypes().setAll(bottoneAcquisto, bottonePrenota, annulla);
+
+                    scelta.showAndWait().ifPresent(risultato -> {
+                        if (risultato == bottoneAcquisto) {
+                            mostraDialogAcquisto(viaggio);
+                        } else if (risultato == bottonePrenota) {
+                            mostraDialogPrenotazione(viaggio);
+                        }
+                    });
                 });
 
             }
@@ -79,8 +95,6 @@ public class RicercaViaggiController {
     @Setter
     private String utenteCf;
 
-    @Setter
-    private boolean modalitaAcquisto = false;
 
     @FXML
     private void handleCerca() {
@@ -95,8 +109,10 @@ public class RicercaViaggiController {
         }
 
         try {
-            CercaViaggiResponse response = client.utenteCercaViaggi(
-                    data.toString(), tipoTreno, partenza, arrivo
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String dataFormattata = data.format(formatter);
+            CercaViaggiResponse response = client.utenteCercaViaggi(dataFormattata
+                    , tipoTreno, partenza, arrivo
             );
 
             List<ViaggioDTO> viaggi = response.getViaggiList();
@@ -119,8 +135,15 @@ public class RicercaViaggiController {
 
         dialog.showAndWait().ifPresent(cf -> {
             PrenotaResponse response = client.prenotaViaggioUtente(viaggio.getIdViaggio(), cf);
-            showAlert(response.getSuccesso() ? Alert.AlertType.INFORMATION : Alert.AlertType.ERROR, response.getMessaggio());
+
+            // Se la prenotazione fallisce perché l’utente non esiste
+            if (!response.getSuccesso() && response.getMessaggio().contains("Utente non presente nel DB")) {
+                chiediLoginORegistrazione();
+            } else {
+                showAlert(response.getSuccesso() ? Alert.AlertType.INFORMATION : Alert.AlertType.ERROR, response.getMessaggio());
+            }
         });
+
     }
 
     private void mostraDialogAcquisto(ViaggioDTO viaggio) {
@@ -145,8 +168,21 @@ public class RicercaViaggiController {
                             viaggio.getIdViaggio(), cf, carta, pnr
                     );
 
-                    showAlert(response.getSuccesso() ? Alert.AlertType.INFORMATION : Alert.AlertType.ERROR,
-                            response.getMessaggioConferma());
+                    if (!response.getSuccesso()) {
+                        String messaggio = response.getMessaggioConferma();
+                        if (messaggio.contains("Utente non trovato")) {
+                            chiediLoginORegistrazione();
+                        } else if (messaggio.contains("Carta non valida")) {
+                            showAlert(Alert.AlertType.ERROR, "Carta di credito non valida. Riprovare con una carta valida.");
+                        } else if (messaggio.contains("Prenotazione già scaduta")) {
+                            showAlert(Alert.AlertType.WARNING, "La prenotazione è scaduta. Prenota di nuovo prima di acquistare.");
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, messaggio);
+                        }
+                    } else {
+                        showAlert(Alert.AlertType.INFORMATION, response.getMessaggioConferma());
+                    }
+
                     if (controller.isMonitoraggioRichiesto()) {
                         StatusViaggioTResponse stato = client.statusAttualeViaggio(viaggio.getIdViaggio());
                         StatoTrenoController.mostraConMonitoraggio(stato.getIdTreno(), stato.getMessage());
@@ -165,5 +201,44 @@ public class RicercaViaggiController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void chiediLoginORegistrazione() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Utente non registrato");
+        alert.setHeaderText("Non risulti registrato nel sistema.");
+        alert.setContentText("Vuoi accedere o registrarti?");
+
+        ButtonType loginButton = new ButtonType("Login");
+        ButtonType registerButton = new ButtonType("Registrati");
+        ButtonType cancelButton = new ButtonType("Annulla", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(loginButton, registerButton, cancelButton);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == loginButton) {
+                tornaAlLogin();
+            } else if (response == registerButton) {
+                vaiAllaRegistrazione();
+            }
+        });
+    }
+
+    private void tornaAlLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+            stazPartenzaField.getScene().setRoot(loader.load());
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Errore nel caricamento del login");
+        }
+    }
+
+    private void vaiAllaRegistrazione() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/registrati.fxml"));
+            stazPartenzaField.getScene().setRoot(loader.load());
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Errore nel caricamento della registrazione");
+        }
     }
 }

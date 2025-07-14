@@ -22,16 +22,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="prenotaButton" mnemonicParsing="false" onAction="#handlePrenota" text="Prenota Viaggio" textFill="#250c70">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Button>
-      <Button fx:id="acquistaButton" mnemonicParsing="false" onAction="#handleAcquista" text="Acquista Biglietto" textFill="#0eeef2">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Button>
+
       <Button fx:id="fedeltaButton" mnemonicParsing="false" onAction="#handleFedelta" text="Sottoscrivi Fedeltà" textFill="#1b09e0">
          <font>
             <Font size="14.0" />

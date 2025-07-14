@@ -11,8 +11,27 @@
 <?import javafx.scene.text.Font?>
 
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="500.0" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.ModificaBigliettoController">
+<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.ModificaBigliettoController">
    <children>
+      <Label text="Codice Biglietto">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="codBigliettoField" prefHeight="27.0" prefWidth="343.0" promptText="CODBIGLIETTO" />
+      <Label text="Numero Carrozza">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="carrozzaField" prefHeight="27.0" prefWidth="343.0" promptText="6" />
+      <Label text="Numero Posto">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="postoField" prefHeight="27.0" prefWidth="343.0" promptText="10" />
+
       <Label text="Nuova Data">
          <font>
             <Font size="14.0" />

@@ -35,18 +35,20 @@ public class LoginController {
         try {
             var response = client.loginUtente(email, password);
             boolean isAdmin = response.getLoginUt().getAdmin();
+            System.out.println(isAdmin);
 
-            if (isAdmin) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gestisciAdmin.fxml"));
-                Parent root = loader.load();
-                Stage stage = (Stage) loginButton.getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.setTitle("Dashboard Amministratore");
-                stage.show();
-            } else {
+           if (isAdmin) {
+               FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin.fxml"));
+               Parent root = loader.load();
+               Stage stage = (Stage) loginButton.getScene().getWindow();
+               stage.setScene(new Scene(root));
+               stage.setTitle("Admin Dashboard");
+           }
+           else{
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dashboard.fxml"));
                 Parent root = loader.load();
                 DashboardController controller = loader.getController();
+                controller.setClient(client);
                 controller.setUtenteCf(response.getLoginUt().getCodiceFiscale());
 
                 Stage stage = (Stage) loginButton.getScene().getWindow();
@@ -56,7 +58,8 @@ public class LoginController {
             }
 
         } catch (Exception e) {
-            infoLabel.setText("Login fallito: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Login fallito", "Utente e/o password errata");
+            new Thread(() -> e.printStackTrace()).start();
         }
     }
 
@@ -72,7 +75,7 @@ public class LoginController {
             stage.setScene(new Scene(root));
             stage.setTitle("Registrazione Utente");
         } catch (Exception e) {
-            infoLabel.setText("Errore nel caricamento della schermata di registrazione: " + e.getMessage());
+            infoLabel.setText("Errore nel caricamento della schermata di registrazione");
         }
     }
 

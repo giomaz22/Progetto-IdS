@@ -96,8 +96,8 @@ public class CreaTabelleUtil {
                     PercentualeSconto INT,
                     soloFedelta BOOLEAN,
                     tipoTreno VARCHAR,
-                    inizioPromo VARCHAR,
-                    finePromo VARCHAR
+                    inizioPromo DATE,
+                    finePromo DATE
                 )
             """);
         } catch (SQLException e) {
