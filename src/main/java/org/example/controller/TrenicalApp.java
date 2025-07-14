@@ -9,6 +9,11 @@ import javafx.stage.Stage;
 
 public class TrenicalApp extends Application {
 
+    /*
+    Per far partire l'applicazione è necessario avviare prima la classe TrenicalServer
+    e poi con il comando maven clean javafx:run l'applicazione.
+     */
+
 
     @Override
     public void start(Stage primaryStage) {
